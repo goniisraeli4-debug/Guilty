@@ -1,0 +1,32 @@
+---
+description: Locked parallax + inline SVG sharpness — do not regress
+globs: styles.css,**/product-parallax.js,**/pink-parallax.js,**/home-detail-parallax.js,**/parallax-inline-svg.js,**/scarf-expand.js,products/*.html,index.html
+alwaysApply: false
+---
+
+# Parallax & inline SVG — locked (working state)
+
+Do **not** change parallax depth, motion, or SVG sharpness unless the user explicitly asks to fix a regression.
+
+## CSS — required (blur + depth)
+
+- `.parallax-scene` must **not** have `transform-style: preserve-3d` (with `overflow: hidden` it flattens 3D and kills depth).
+- `.parallax-world` and `.parallax-layer` keep `transform-style: preserve-3d` and `backface-visibility: hidden`.
+- Reveal-layer SVGs: `transform: scale(...)` only — **never** `translateZ(0) scale(...)` on the `<svg>`.
+- `.parallax-layer svg.parallax-layer-svg`: `backface-visibility: hidden` only — **no** `transform: translateZ(0)` or `transform-style: preserve-3d` on the SVG.
+- `.scarf-detail-visual`: **no** `will-change: transform` (causes raster blur during 3D scroll).
+
+## JS — required
+
+- Layer motion: `Math.round(...)` on Z, output `translate3d(0, 0, ${z}px)`.
+- Keep `maxOffset = 2500`, wheel smoothing, reset, and layer `data-base-z` / reveal / fade timing unchanged.
+- Do not add perspective-compensation hacks or fractional-pixel transforms.
+
+## SVG delivery
+
+- Layers must be **inline `<svg class="parallax-layer-svg">`** (via `parallax-inline-svg.js` on HTTP, or `scripts/build-inline-svgs.py` output).
+- Do **not** replace working inline SVG with huge static blobs that break DOM/parallax, and do **not** rely on `<img src="*.svg">` alone for parallax layers (bitmap blur under perspective).
+
+## Do not touch unless asked
+
+- Scarf row size/gap, expand morph, home overlay glass, product page white backgrounds.

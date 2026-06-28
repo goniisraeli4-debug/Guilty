@@ -5,6 +5,8 @@
   const section = document.querySelector('.about-parallax');
   if (!section) return;
 
+  const scrollPageMode = document.body.classList.contains('page-home');
+
   const layers = [...section.querySelectorAll('[data-base-z]')];
   const MAX_OFFSET = 23339;
   const WHEEL_FACTOR = 0.62;
@@ -190,8 +192,36 @@
     });
   }
 
+  function getHeaderHeight() {
+    const raw = getComputedStyle(document.documentElement).getPropertyValue('--header-height');
+    const parsed = parseFloat(raw);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function isSectionPinned() {
+    if (!scrollPageMode) return true;
+    const rect = section.getBoundingClientRect();
+    const headerH = getHeaderHeight();
+    return rect.top <= headerH + 2 && rect.bottom >= window.innerHeight - 2;
+  }
+
+  function canReleaseDown() {
+    return targetOffset >= MAX_OFFSET - 1 && displayOffset >= MAX_OFFSET - 2;
+  }
+
+  function canReleaseUp() {
+    return targetOffset <= 0 && displayOffset <= 1;
+  }
+
   window.addEventListener('wheel', (e) => {
     if (e.ctrlKey) return;
+
+    if (scrollPageMode) {
+      if (!isSectionPinned()) return;
+      if (e.deltaY > 0 && canReleaseDown()) return;
+      if (e.deltaY < 0 && canReleaseUp()) return;
+    }
+
     e.preventDefault();
     handleDelta(e.deltaY * WHEEL_FACTOR);
   }, { passive: false, capture: true });
@@ -212,10 +242,12 @@
 
   function playIntroHint() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (scrollPageMode && !isSectionPinned()) return;
 
     const hintOffset = MAX_OFFSET * 0.032;
 
     setTimeout(() => {
+      if (scrollPageMode && !isSectionPinned()) return;
       targetOffset = hintOffset;
       startAnim();
 
@@ -226,5 +258,21 @@
     }, 1500);
   }
 
-  playIntroHint();
+  if (scrollPageMode) {
+    let introPlayed = false;
+    const introObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !introPlayed) {
+            introPlayed = true;
+            playIntroHint();
+          }
+        });
+      },
+      { threshold: 0.6 }
+    );
+    introObserver.observe(section);
+  } else {
+    playIntroHint();
+  }
 })();

@@ -70,6 +70,8 @@
 
 // In-page hash targets (navigate only — reloads land at top via scroll-land.js)
 (function () {
+  if (document.body.classList.contains('page-home')) return;
+
   const navEntry = performance.getEntriesByType('navigation')[0];
   if (!navEntry || navEntry.type !== 'navigate' || !location.hash) return;
 
@@ -179,7 +181,7 @@ document.querySelectorAll('.scarf-card, .about-inner, .contact-inner, .section-h
   const hasProductOverlayFooter = document.body.classList.contains('product-overlay-mode');
   if (!hasFixedContactFooter && !hasProductOverlayFooter) return;
 
-  const contact = document.querySelector('main .contact#contact');
+  const contact = document.querySelector('main .contact#contact, main .contact#footer');
   if (contact) document.body.appendChild(contact);
 
   const scrollRoots = [window];

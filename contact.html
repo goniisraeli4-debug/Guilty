@@ -8,20 +8,15 @@
   <link rel="icon" href="icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=hdr18">
-  <script>location.replace('index.html#contact');</script>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=page-tx9">
   <script src="scroll-land.js"></script>
 </head>
-<body class="page-contact">
+<body class="page-info page-contact">
 
   <header class="header">
-    <a href="index.html" class="logo-link" aria-label="GUILTY. home">
-      <img src="wordmark.png" alt="GUILTY." class="wordmark">
-    </a>
     <nav class="nav" aria-label="Main navigation">
-      <a href="index.html" class="nav-link">Home</a>
-      <a href="index.html#collection" class="nav-link">Collection</a>
+      <a href="collection.html" class="nav-link">Collection</a>
       <a href="about.html" class="nav-link">About</a>
       <a href="comunity.html" class="nav-link">Community</a>
       <a href="contact.html" class="nav-link active">Contact</a>
@@ -33,55 +28,88 @@
   </header>
 
   <main>
-    <section class="about about-page contact-page">
+    <section class="about about-page info-page">
       <div class="community-page-bg" aria-hidden="true">
         <div class="community-page-bg-track">
           <div class="community-page-bg-item"><img src="images/IMG_0708.jpg" alt="" decoding="async"></div>
           <div class="community-page-bg-item"><img src="images/IMG_0632.jpg" alt="" decoding="async"></div>
           <div class="community-page-bg-item"><img src="images/community/community-3-img-0571.jpg?v=cb11" alt="" decoding="async"></div>
-          <div class="community-page-bg-item"><img src="images/community/community-firefly-8-shirt.jpg?v=cb11" alt="" decoding="async"></div>
+          <div class="community-page-bg-item"><img src="images/community/community-firefly-8-shirt.jpg?v=cb21" alt="" decoding="async"></div>
           <div class="community-page-bg-item"><img src="images/community/community-img-0635-full.png?v=cb11" alt="" decoding="async"></div>
           <div class="community-page-bg-item"><img src="images/IMG_0480 (1).jpg?v=cb8" alt="" decoding="async"></div>
           <div class="community-page-bg-item"><img src="images/IMG_0580 (1).JPG" alt="" decoding="async"></div>
           <div class="community-page-bg-item" aria-hidden="true"><img src="images/IMG_0708.jpg" alt="" decoding="async"></div>
           <div class="community-page-bg-item" aria-hidden="true"><img src="images/IMG_0632.jpg" alt="" decoding="async"></div>
           <div class="community-page-bg-item" aria-hidden="true"><img src="images/community/community-3-img-0571.jpg?v=cb11" alt="" decoding="async"></div>
-          <div class="community-page-bg-item" aria-hidden="true"><img src="images/community/community-firefly-8-shirt.jpg?v=cb11" alt="" decoding="async"></div>
+          <div class="community-page-bg-item" aria-hidden="true"><img src="images/community/community-firefly-8-shirt.jpg?v=cb21" alt="" decoding="async"></div>
           <div class="community-page-bg-item" aria-hidden="true"><img src="images/community/community-img-0635-full.png?v=cb11" alt="" decoding="async"></div>
           <div class="community-page-bg-item" aria-hidden="true"><img src="images/IMG_0480 (1).jpg?v=cb8" alt="" decoding="async"></div>
           <div class="community-page-bg-item" aria-hidden="true"><img src="images/IMG_0580 (1).JPG" alt="" decoding="async"></div>
         </div>
       </div>
       <div class="info-page-content-stage">
-        <div class="about-inner contact-inner info-page-inner">
-        <div class="info-page-head">
-          <p class="label">Contact</p>
-          <h1>Get in touch.</h1>
+        <div class="about-inner community-inner info-page-inner reveal" data-info-page="community" hidden aria-hidden="true">
+          <div class="info-page-head">
+            <p class="label">Community</p>
+            <h1>Join us.</h1>
+          </div>
+          <div class="info-page-manifesto community-manifesto">
+            <p>
+              The true mark of exclusivity is what we are<br>
+              willing to ignore. We are a collective that<br>
+              <span class="manifesto-row manifesto-row--gap">has dropped the performance.</span>
+              We know reality is broken, we just value our<br>
+              reflection more. We choose the silhouette<br>
+              over the consequence. Every single time.<br>
+              <span class="manifesto-row manifesto-row--gap">Cold, unapologetic apathy.</span>
+              We already know how to look away,<br>
+              we might as well look flawless doing it.
+            </p>
+          </div>
+          <div class="about-details community-details">
+            <div>
+              <span class="detail-label">Instagram</span>
+              <span>@guilty.edition</span>
+            </div>
+            <div>
+              <span class="detail-label">Newsletter</span>
+              <span>Coming soon</span>
+            </div>
+            <div>
+              <span class="detail-label">Members</span>
+              <span>Open exclusively to the insatiable.</span>
+            </div>
+          </div>
         </div>
-        <div class="info-page-manifesto community-manifesto">
-          <p>
-            For inquiries, press, and collaborations,<br>
-            write to us directly.
-          </p>
-        </div>
-        <div class="about-details contact-details">
-          <div>
-            <span class="detail-label">Email</span>
-            <a href="mailto:support@guilty.invalid">support@guilty.invalid</a>
+        <div class="about-inner contact-inner info-page-inner is-info-active reveal" data-info-page="contact" aria-hidden="false">
+          <div class="info-page-head">
+            <p class="label">Contact</p>
+            <h1>Get in touch.</h1>
           </div>
-          <div>
-            <span class="detail-label">Inquiries</span>
-            <span>Scarf availability &amp; orders</span>
+          <div class="info-page-manifesto community-manifesto">
+            <p>
+              For inquiries, press, and collaborations,<br>
+              write to us directly.
+            </p>
           </div>
-          <div>
-            <span class="detail-label">Studio</span>
-            <span>Tel Aviv, Israel</span>
+          <div class="about-details contact-details">
+            <div>
+              <span class="detail-label">Email</span>
+              <a href="mailto:support@guilty.invalid">support@guilty.invalid</a>
+            </div>
+            <div>
+              <span class="detail-label">Inquiries</span>
+              <span>Scarf availability &amp; orders</span>
+            </div>
+            <div>
+              <span class="detail-label">Studio</span>
+              <span>Tel Aviv, Israel</span>
+            </div>
+            <div>
+              <span class="detail-label">Response</span>
+              <span>Within 48 hours</span>
+            </div>
           </div>
-          <div>
-            <span class="detail-label">Response</span>
-            <span>Within 48 hours</span>
-          </div>
-        </div>
         </div>
       </div>
     </section>
@@ -98,8 +126,8 @@
     </section>
   </main>
 
-  <script src="community-bg.js?v=cb10"></script>
-  <script src="info-page-nav.js?v=4"></script>
-  <script src="script.js?v=foot1"></script>
+  <script src="community-bg.js?v=cb15"></script>
+  <script src="info-page-nav.js?v=page-tx9"></script>
+  <script src="script.js?v=page-tx9"></script>
 </body>
 </html>

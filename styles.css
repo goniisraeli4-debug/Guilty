@@ -13,24 +13,101 @@
   --border: #e0e0e0;
   --font-mono: 'IBM Plex Mono', monospace;
   --font-body: 'Inter', system-ui, sans-serif;
+  --letter-spacing-inter: 1.01%;
+  --letter-spacing-mono: 1.8%;
   --page-pad: clamp(1.5rem, 4vw, 3rem);
   --max: 1280px;
-  --header-height: calc((1.5rem - 12px) * 2 + 20px + 1px);
+  --header-height: calc(1rem * 2 + 0.72rem * 1.2);
   --product-scarf-nav-gap: 12px;
   --product-scarf-nav-height: 90px;
   --product-scarf-nav-top: calc(var(--header-height) + var(--product-scarf-nav-gap));
   --product-main-top-pad: calc(var(--product-scarf-nav-top) + var(--product-scarf-nav-height));
+  --page-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --page-duration: 0.28s;
+  --page-duration-ms: 280;
+  --page-shift: 10px;
+  --title-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --title-duration: 0.48s;
+  --title-duration-ms: 480;
 }
 
 html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font-body);
+  letter-spacing: var(--letter-spacing-inter);
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Cross-document page transitions — old page fades over fully-opaque new page (no white gap) */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+  animation: page-view-out var(--page-duration) var(--page-ease) both;
+}
+
+::view-transition-new(root) {
+  z-index: 0;
+  animation: none;
+  opacity: 1;
+}
+
+@keyframes page-view-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}
+
+:is(
+  .label,
+  .link-arrow,
+  button.link-arrow.add-to-bag,
+  .cart-widget-badge,
+  .cart-widget-panel-count,
+  .cart-widget-empty,
+  .cart-widget-item-meta,
+  .cart-widget-qty-btn,
+  .cart-widget-qty-value,
+  .cart-widget-subtotal,
+  .cart-widget-link,
+  .cart-widget-checkout,
+  .scarf-num,
+  .about-body,
+  .detail-label,
+  .word-guilty,
+  .email-link,
+  .footer-left p,
+  .footer-right a,
+  .scarf-nav-label,
+  .scarf-nav-num,
+  .product-specs dt,
+  .product-back,
+  .cart-page-count,
+  .cart-item-label,
+  .cart-qty-label,
+  .cart-qty select,
+  .cart-item-remove,
+  .cart-summary-line dt,
+  .cart-checkout-btn,
+  .cart-drop-note,
+  .cart-empty-text,
+  .about-parallax__text--paragraph,
+  .about-parallax__text--manifesto .word-guilty
+) {
+  letter-spacing: var(--letter-spacing-mono);
 }
 
 .text-keep {
@@ -53,7 +130,7 @@ h1, h2, h3 {
 .label {
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  letter-spacing: 0.12em;
+  letter-spacing: var(--letter-spacing-mono);
   text-transform: uppercase;
   color: var(--text-muted);
   margin-bottom: 1.25rem;
@@ -62,7 +139,6 @@ h1, h2, h3 {
 .link-arrow {
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  letter-spacing: 0.06em;
   color: var(--text);
   text-decoration: none;
   border-bottom: 1px solid var(--text);
@@ -81,7 +157,6 @@ h1, h2, h3 {
 button.link-arrow.add-to-bag {
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  letter-spacing: 0.06em;
   color: var(--text);
   background: none;
   border: none;
@@ -111,26 +186,37 @@ button.link-arrow.add-to-bag {
   position: fixed;
   inset: 0 0 auto;
   z-index: 100;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr auto 1fr auto 1fr auto 1fr auto;
   align-items: center;
-  justify-content: flex-start;
-  padding: calc(1.5rem - 12px) var(--page-pad);
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
+  justify-items: center;
+  padding: 1rem var(--page-pad);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   isolation: isolate;
+  --header-font-size: 14px;
 }
 
 .logo-link {
-  position: absolute;
-  left: 50%;
-  z-index: 2;
+  position: relative;
+  z-index: 3;
+  grid-column: 1;
+  justify-self: start;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  transform: translateX(-50%);
-  order: 2;
-  margin-left: 0;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: var(--header-font-size);
+  letter-spacing: var(--letter-spacing-mono);
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+  transition: opacity 0.2s;
 }
+
+.logo-link:hover { opacity: 0.45; }
 
 .wordmark {
   height: 20px;
@@ -138,32 +224,36 @@ button.link-arrow.add-to-bag {
 }
 
 .nav {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  gap: 2.5rem;
-  order: 1;
+  display: contents;
 }
 
-.nav a {
+.header .nav a {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: var(--header-font-size);
+  letter-spacing: var(--letter-spacing-mono);
   color: var(--text);
   text-decoration: none;
   transition: opacity 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.nav a:hover { opacity: 0.4; }
+.header .nav a:nth-child(1) { grid-column: 3; }
+.header .nav a:nth-child(2) { grid-column: 5; }
+.header .nav a:nth-child(3) { grid-column: 7; }
+.header .nav a:nth-child(4) { grid-column: 9; }
+
+.header .nav a:hover { opacity: 0.4; }
 
 .nav-link.active {
-  opacity: 0.4;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
 }
 
 .menu-toggle {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   display: none;
   flex-direction: column;
   gap: 5px;
@@ -171,7 +261,6 @@ button.link-arrow.add-to-bag {
   border: none;
   cursor: pointer;
   padding: 4px;
-  order: 1;
 }
 
 .menu-toggle span {
@@ -185,9 +274,10 @@ button.link-arrow.add-to-bag {
 /* ---- Cart widget (header) ---- */
 .cart-widget {
   position: relative;
-  z-index: 2;
-  order: 3;
-  margin-left: auto;
+  z-index: 3;
+  grid-column: 11;
+  justify-self: end;
+  flex-shrink: 0;
 }
 
 .cart-widget-toggle {
@@ -229,7 +319,6 @@ button.link-arrow.add-to-bag {
   font-size: 0.55rem;
   line-height: 15px;
   text-align: center;
-  letter-spacing: 0;
 }
 
 .cart-widget-panel {
@@ -254,7 +343,7 @@ button.link-arrow.add-to-bag {
 .cart-widget-panel-count {
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--letter-spacing-mono);
   text-transform: uppercase;
   color: var(--text-muted);
 }
@@ -303,7 +392,6 @@ button.link-arrow.add-to-bag {
 
 .cart-widget-item-name {
   font-size: 0.85rem;
-  letter-spacing: 0.03em;
   color: var(--text);
   text-decoration: none;
   transition: opacity 0.2s;
@@ -316,7 +404,7 @@ button.link-arrow.add-to-bag {
 .cart-widget-item-meta {
   font-family: var(--font-mono);
   font-size: 0.6rem;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--letter-spacing-mono);
   text-transform: uppercase;
   color: var(--text-muted);
   margin-top: 0.15rem;
@@ -359,7 +447,6 @@ button.link-arrow.add-to-bag {
   min-width: 1rem;
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  letter-spacing: 0.08em;
   text-align: center;
   color: var(--text-muted);
 }
@@ -383,14 +470,13 @@ button.link-arrow.add-to-bag {
   margin-bottom: 1rem;
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--letter-spacing-mono);
   text-transform: uppercase;
 }
 
 .cart-widget-subtotal-value {
   font-size: 0.85rem;
   font-weight: 500;
-  letter-spacing: 0;
   text-transform: none;
 }
 
@@ -406,7 +492,7 @@ button.link-arrow.add-to-bag {
   text-align: center;
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--letter-spacing-mono);
   text-transform: uppercase;
   text-decoration: none;
   padding: 0.75rem 0.5rem;
@@ -449,7 +535,6 @@ button.link-arrow.add-to-bag {
 .hero h1 {
   font-size: clamp(2.5rem, 6vw, 5.5rem);
   line-height: 1.05;
-  letter-spacing: -0.02em;
   margin-bottom: 2.5rem;
 }
 
@@ -473,7 +558,7 @@ button.link-arrow.add-to-bag {
 }
 
 .page-home .hero-spline-stage {
-  transform: translateY(-50px);
+  transform: translateY(-20px);
 }
 
 .hero-spline-stage > spline-viewer {
@@ -491,7 +576,6 @@ button.link-arrow.add-to-bag {
   right: 0;
   z-index: 1;
   padding: 2rem var(--page-pad) calc(var(--home-footer-height) + 1.25rem);
-  background: linear-gradient(to top, rgba(255,255,255,0.95) 40%, transparent);
   pointer-events: none;
   opacity: var(--overlay-opacity, 1);
   will-change: opacity;
@@ -515,6 +599,7 @@ button.link-arrow.add-to-bag {
   line-height: 0.95;
   margin-bottom: 0;
   text-align: left;
+  letter-spacing: -0.02em;
 }
 
 .page-home .hero-overlay .link-arrow {
@@ -523,49 +608,30 @@ button.link-arrow.add-to-bag {
   transform: translateY(-4px);
 }
 
-.page-home {
+.page-home,
+.page-collection {
   --home-scarf-size: calc(min(47.5vw, (100svh - 8rem) * 0.95) * 0.95 * 0.93 * 0.94);
   --home-footer-pad: 10px;
   --home-footer-height: calc(var(--home-footer-pad) * 2 + 0.72rem);
   --home-gallery-height: 100svh;
-  --home-section-height: calc(100svh - var(--header-height));
 }
 
-.page-home .hero-spline,
-.page-home .home-gallery {
-  scroll-margin-top: var(--header-height);
+/* Collection — locked viewport, no page scroll (horizontal scarf row still scrolls) */
+.page-collection {
+  overflow: hidden;
+  height: 100svh;
+  overscroll-behavior: none;
 }
 
-.page-home .about-parallax {
-  position: sticky;
-  top: var(--header-height);
-  width: 100%;
-  min-height: var(--home-section-height);
-  height: var(--home-section-height);
-  scroll-margin-top: var(--header-height);
-  background: var(--bg);
-  cursor: crosshair;
-  touch-action: none;
-  z-index: 2;
+html:has(body.page-collection) {
+  overflow: hidden;
+  height: 100%;
 }
 
-.page-home .about.about-page {
-  position: sticky;
-  top: var(--header-height);
-  min-height: var(--home-section-height);
-  height: var(--home-section-height);
-  scroll-margin-top: var(--header-height);
-  padding: clamp(1.5rem, 3.5vh, 2.75rem) var(--page-pad);
+.page-collection main {
+  height: 100svh;
   overflow: hidden;
   box-sizing: border-box;
-  border-top: none;
-  background: transparent;
-  z-index: 2;
-}
-
-.page-home .about.about-page.community-page,
-.page-home .about.about-page.contact-page {
-  background: transparent;
 }
 
 .home-scarf-scroll {
@@ -575,7 +641,8 @@ button.link-arrow.add-to-bag {
   overflow: visible;
 }
 
-.page-home .home-scarf-scroll {
+.page-home .home-scarf-scroll,
+.page-collection .home-scarf-scroll {
   display: flex;
   align-items: center;
   box-sizing: border-box;
@@ -584,6 +651,53 @@ button.link-arrow.add-to-bag {
   padding: 0;
   scroll-margin-top: var(--header-height);
   overflow: visible;
+}
+
+.page-collection .home-scarf-scroll {
+  min-height: 100svh;
+  height: 100svh;
+}
+
+.collection-bg-text {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-inline: var(--page-pad);
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(2rem, 12vw, 120pt);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--text);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.page-collection .home-scarf-scroll-inner {
+  position: relative;
+  z-index: 1;
+  transform: translateY(-30px);
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--page-pad);
+}
+
+/* Center the focused scarf; keep first/last at the edges (no big side gaps) */
+.page-collection .home-scarf-item {
+  scroll-snap-align: center;
+}
+
+.page-collection .home-scarf-item:first-child {
+  scroll-snap-align: start;
+}
+
+.page-collection .home-scarf-item:last-child {
+  scroll-snap-align: end;
 }
 
 .page-home .home-gallery {
@@ -599,6 +713,7 @@ button.link-arrow.add-to-bag {
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--page-pad);
   scrollbar-width: none;
   padding-inline: var(--page-pad);
   padding-block: clamp(1.5rem, 4svh, 2.75rem);
@@ -607,7 +722,8 @@ button.link-arrow.add-to-bag {
   box-sizing: border-box;
 }
 
-.page-home .home-scarf-scroll-inner {
+.page-home .home-scarf-scroll-inner,
+.page-collection .home-scarf-scroll-inner {
   width: 100%;
   flex: 0 1 auto;
   display: flex;
@@ -624,8 +740,8 @@ button.link-arrow.add-to-bag {
   gap: 36px;
   width: max-content;
   overflow: visible;
-  /* trailing space so the last scarf can scroll to screen center */
-  padding-inline-end: max(0px, calc(50vw - var(--home-scarf-size) / 2 - var(--page-pad)));
+  /* trailing gap matches the leading page-pad beside the first scarf */
+  padding-inline-end: var(--page-pad);
 }
 
 .home-scarf-item {
@@ -633,10 +749,10 @@ button.link-arrow.add-to-bag {
   width: var(--home-scarf-size);
   color: inherit;
   text-decoration: none;
-  scroll-snap-align: center;
+  scroll-snap-align: start;
   pointer-events: auto;
   opacity: 0.8;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: visible;
 }
 
@@ -693,19 +809,19 @@ button.link-arrow.add-to-bag {
    the low SVG displacement adds the light surface flow on top. */
 @keyframes scarf-sway {
   0% {
-    transform: rotate(-0.7deg) skewX(0.6deg) translateX(-1px) translateY(0) scaleY(1);
+    transform: rotate(-1.1deg) skewX(0.9deg) translateX(-1.6px) translateY(0) scaleY(1);
   }
   30% {
-    transform: rotate(0.4deg) skewX(-0.4deg) translateX(0.8px) translateY(-0.6px) scaleY(0.9992);
+    transform: rotate(0.65deg) skewX(-0.65deg) translateX(1.3px) translateY(-1px) scaleY(0.9988);
   }
   55% {
-    transform: rotate(0.7deg) skewX(-0.6deg) translateX(1px) translateY(0) scaleY(1.0008);
+    transform: rotate(1.1deg) skewX(-0.9deg) translateX(1.6px) translateY(0) scaleY(1.0012);
   }
   80% {
-    transform: rotate(0.1deg) skewX(-0.1deg) translateX(0.2px) translateY(-0.5px) scaleY(0.9996);
+    transform: rotate(0.15deg) skewX(-0.15deg) translateX(0.3px) translateY(-0.8px) scaleY(0.9994);
   }
   100% {
-    transform: rotate(-0.7deg) skewX(0.6deg) translateX(-1px) translateY(0) scaleY(1);
+    transform: rotate(-1.1deg) skewX(0.9deg) translateX(-1.6px) translateY(0) scaleY(1);
   }
 }
 
@@ -718,7 +834,7 @@ button.link-arrow.add-to-bag {
 
 .home-scarf-meta {
   padding: 0.85rem 0 0;
-  transform: translateY(8px);
+  transform: translateY(10px);
   width: 100%;
 }
 
@@ -749,6 +865,10 @@ button.link-arrow.add-to-bag {
   transform: translateX(-8px);
 }
 
+.page-collection .home-scarf-cart {
+  transform: translateX(-18px);
+}
+
 .home-scarf-cart:hover {
   opacity: 1;
 }
@@ -773,10 +893,13 @@ button.link-arrow.add-to-bag {
 
 .home-scarf-meta h3 {
   font-size: 0.9rem;
-  letter-spacing: -0.01em;
   margin: 0;
   text-align: left;
   transform: translateX(12px);
+}
+
+.page-collection .home-scarf-meta h3 {
+  transform: translateX(22px);
 }
 
 /* ---- Scarf expand (home) ---- */
@@ -865,6 +988,7 @@ button.link-arrow.add-to-bag {
   gap: clamp(2rem, 5vw, 5rem);
   width: min(92vw, var(--max));
   padding-inline: var(--page-pad);
+  transform: translateY(10px);
 }
 
 .scarf-detail-visual {
@@ -967,7 +1091,6 @@ button.link-arrow.add-to-bag {
 
 .scarf-detail-info h1 {
   font-size: clamp(2rem, 5vw, 3.5rem);
-  letter-spacing: -0.02em;
   margin-bottom: 2rem;
 }
 
@@ -1027,18 +1150,20 @@ button.link-arrow.add-to-bag {
 .page-home .home-scarf-scroll-inner,
 .page-home .hero-overlay,
 .page-home .home-gallery,
-.page-home .about-parallax,
-.page-home .about.about-page,
-.page-home .contact {
+.page-home .contact,
+.page-collection .home-scarf-scroll-inner,
+.page-collection .collection-bg-text,
+.page-collection .contact {
   transition: opacity 0.4s cubic-bezier(0.22, 0.84, 0.35, 1);
 }
 
 .page-home.scarf-expanded .home-scarf-scroll-inner,
 .page-home.scarf-expanded .hero-overlay,
 .page-home.scarf-expanded .home-gallery,
-.page-home.scarf-expanded .about-parallax,
-.page-home.scarf-expanded .about.about-page,
-.page-home.scarf-expanded .contact {
+.page-home.scarf-expanded .contact,
+.page-collection.scarf-expanded .home-scarf-scroll-inner,
+.page-collection.scarf-expanded .collection-bg-text,
+.page-collection.scarf-expanded .contact {
   opacity: 0;
   pointer-events: none;
 }
@@ -1082,25 +1207,23 @@ body.product-overlay-mode .scarf-detail.is-open {
 }
 
 @media (max-width: 900px) {
-  .page-home {
+  .page-home,
+  .page-collection {
     --home-scarf-size: calc(min(83.6vw, (100svh - 10rem) * 0.95) * 0.95 * 0.93 * 0.94);
   }
 }
 
 .page-about main,
+.page-info main,
 .page-comunity main,
 .page-contact main,
 .page-cart main,
-.page-preorder main {
+.page-home main,
+.page-collection main {
   padding-bottom: 0;
 }
 
-.page-home main {
-  padding-bottom: var(--home-footer-height);
-}
-
 .contact#contact,
-.contact#footer,
 body.product-overlay-mode .product-overlay-contact {
   position: fixed;
   bottom: 0;
@@ -1122,7 +1245,6 @@ body.product-overlay-mode .product-overlay-contact {
 }
 
 .contact#contact .footer,
-.contact#footer .footer,
 body.product-overlay-mode .product-overlay-contact .footer {
   width: 100%;
   max-width: none;
@@ -1141,13 +1263,13 @@ body.product-overlay-mode .product-overlay-contact .footer {
 }
 
 body.is-footer-scroll-hidden .contact#contact .footer,
-body.is-footer-scroll-hidden .contact#footer .footer,
 body.is-footer-scroll-hidden .page-home .contact .footer,
+body.is-footer-scroll-hidden .page-collection .contact .footer,
 body.is-footer-scroll-hidden .page-about .contact .footer,
+body.is-footer-scroll-hidden .page-info .contact .footer,
 body.is-footer-scroll-hidden .page-comunity .contact .footer,
 body.is-footer-scroll-hidden .page-contact .contact .footer,
 body.is-footer-scroll-hidden .page-cart .contact .footer,
-body.is-footer-scroll-hidden .page-preorder .contact .footer,
 body.product-overlay-mode.is-footer-scroll-hidden .product-overlay-contact .footer {
   opacity: 0;
   transform: translateY(6px);
@@ -1192,7 +1314,6 @@ body.product-overlay-mode.is-footer-scroll-hidden .product-overlay-contact .foot
 
 .section-header h2 {
   font-size: clamp(1.5rem, 3vw, 2.5rem);
-  letter-spacing: -0.015em;
 }
 
 .scarf-grid {
@@ -1243,7 +1364,6 @@ body.product-overlay-mode.is-footer-scroll-hidden .product-overlay-contact .foot
   font-family: var(--font-mono);
   font-size: 0.65rem;
   color: var(--text-muted);
-  letter-spacing: 0.08em;
   display: block;
   margin-bottom: 0.25rem;
 }
@@ -1279,7 +1399,6 @@ body.product-overlay-mode.is-footer-scroll-hidden .product-overlay-contact .foot
   font-size: clamp(1.1rem, 2vw, 1.5rem);
   font-weight: 400;
   line-height: 1.65;
-  letter-spacing: -0.01em;
   grid-column: 1;
 }
 
@@ -1308,8 +1427,8 @@ body.product-overlay-mode.is-footer-scroll-hidden .product-overlay-contact .foot
 .detail-label {
   font-family: var(--font-mono);
   font-size: 0.65rem;
+  letter-spacing: var(--letter-spacing-mono);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
   color: var(--text-muted);
 }
 
@@ -1332,19 +1451,19 @@ body.product-overlay-mode.is-footer-scroll-hidden .product-overlay-contact .foot
 }
 
 .page-about main,
+.page-info main,
 .page-comunity main,
 .page-contact main,
 .page-cart main,
-.page-preorder main,
 .page-thank-you main {
   padding-top: 0;
 }
 
 .page-about,
+.page-info,
 .page-comunity,
 .page-contact,
 .page-cart,
-.page-preorder,
 .page-thank-you {
   --home-footer-pad: 10px;
   --home-footer-height: calc(var(--home-footer-pad) * 2 + 0.72rem);
@@ -1363,7 +1482,6 @@ body.product-overlay-mode.is-footer-scroll-hidden .product-overlay-contact .foot
 .about-page h1 {
   grid-column: 1;
   font-size: clamp(2rem, 5vw, 3.5rem);
-  letter-spacing: -0.02em;
   margin-bottom: 1.5rem;
 }
 
@@ -1384,7 +1502,6 @@ body.product-overlay-mode.is-footer-scroll-hidden .product-overlay-contact .foot
   font-size: clamp(0.85rem, 1.45vw, 1.05rem);
   font-weight: 500;
   line-height: 1.7;
-  letter-spacing: 0.025em;
   text-transform: uppercase;
   align-self: end;
 }
@@ -1406,7 +1523,7 @@ body.product-overlay-mode.is-footer-scroll-hidden .product-overlay-contact .foot
 .word-guilty {
   font-family: var(--font-mono);
   font-weight: 400;
-  letter-spacing: 0.02em;
+  letter-spacing: var(--letter-spacing-mono);
 }
 
 .thank-you-title .word-guilty {
@@ -1444,6 +1561,7 @@ body.product-overlay-mode.is-footer-scroll-hidden .product-overlay-contact .foot
 }
 
 /* Community & Contact — locked viewport, no page scroll */
+.page-info,
 .page-comunity,
 .page-contact {
   overflow: hidden;
@@ -1451,12 +1569,14 @@ body.product-overlay-mode.is-footer-scroll-hidden .product-overlay-contact .foot
   overscroll-behavior: none;
 }
 
+html:has(body.page-info),
 html:has(body.page-comunity),
 html:has(body.page-contact) {
   overflow: hidden;
   height: 100%;
 }
 
+.page-info main,
 .page-comunity main,
 .page-contact main {
   margin-top: var(--header-height);
@@ -1466,6 +1586,7 @@ html:has(body.page-contact) {
   box-sizing: border-box;
 }
 
+.page-info .about.about-page,
 .page-comunity .about.about-page,
 .page-contact .about.about-page {
   min-height: 0;
@@ -1476,14 +1597,17 @@ html:has(body.page-contact) {
   border-top: none;
 }
 
-.page-comunity .community-page {
+.page-info .info-page,
+.page-comunity .info-page,
+.page-contact .info-page,
+.page-comunity .community-page,
+.page-contact .contact-page {
   position: relative;
   background: transparent;
 }
 
-.page-contact .contact-page {
-  position: relative;
-  background: transparent;
+.info-page-inner[hidden] {
+  display: none !important;
 }
 
 .contact-page-bg {
@@ -1530,7 +1654,6 @@ html:has(body.page-contact) {
   z-index: 0;
   overflow: hidden;
   background: #0a0a0a;
-  container-type: size;
   --community-bg-item-count: 7;
   --community-bg-scroll-duration: calc(var(--community-bg-item-count) * 17s);
 }
@@ -1575,19 +1698,16 @@ html:has(body.page-contact) {
   display: block;
   width: 100%;
   min-width: 100%;
-  min-height: 100cqh;
   overflow: hidden;
+  line-height: 0;
 }
 
+/* Full-width, natural aspect ratio — no crop */
 .community-page-bg-item img {
   display: block;
   width: 100%;
-  min-width: 100%;
   max-width: none;
-  height: 100%;
-  min-height: 100cqh;
-  object-fit: cover;
-  object-position: center center;
+  height: auto;
 }
 
 @keyframes community-bg-scroll {
@@ -1650,10 +1770,10 @@ html:has(body.page-contact) {
   transform: none;
   z-index: 2;
   pointer-events: none;
-  clip-path: inset(0 0 0 0);
-  -webkit-clip-path: inset(0 0 0 0);
-  transition: clip-path 0.48s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: clip-path;
+  transition:
+    opacity var(--title-duration) var(--title-ease),
+    transform var(--title-duration) var(--title-ease);
+  will-change: opacity, transform;
 }
 
 .info-page-content-stage.is-crossfading > .about-inner.is-info-overlay.reveal {
@@ -1662,8 +1782,8 @@ html:has(body.page-contact) {
 }
 
 .info-page-content-stage.is-crossfading > .about-inner.is-info-overlay.is-info-leaving {
-  clip-path: inset(100% 0 0 0);
-  -webkit-clip-path: inset(100% 0 0 0);
+  opacity: 0;
+  transform: translateY(calc(var(--page-shift) * -0.45));
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1672,64 +1792,13 @@ html:has(body.page-contact) {
   }
 
   .info-page-content-stage.is-crossfading > .about-inner.is-info-overlay.is-info-leaving {
-    clip-path: inset(100% 0 0 0);
-    -webkit-clip-path: inset(100% 0 0 0);
+    opacity: 0;
+    transform: none;
   }
 }
 
-.is-info-page-transitioning .community-page-bg,
 .is-info-page-transitioning .community-page-bg-track {
   pointer-events: none;
-}
-
-@view-transition {
-  navigation: auto;
-}
-
-::view-transition-old(info-page-bg),
-::view-transition-new(info-page-bg) {
-  animation: none;
-}
-
-::view-transition-old(info-page-content),
-::view-transition-new(info-page-content) {
-  animation-duration: 0.55s;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-::view-transition-old(info-page-content) {
-  animation-name: info-page-content-out;
-}
-
-::view-transition-new(info-page-content) {
-  animation-name: info-page-content-in;
-}
-
-.page-comunity .community-inner,
-.page-contact .contact-inner {
-  view-transition-name: none;
-}
-
-@keyframes info-page-content-out {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-}
-
-@keyframes info-page-content-in {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .about.about-page .info-page-inner :is(
@@ -1898,7 +1967,6 @@ html:has(body.page-contact) {
 
 .contact-inner h2 {
   font-size: clamp(2rem, 5vw, 4rem);
-  letter-spacing: -0.02em;
   margin-bottom: 2rem;
 }
 
@@ -1989,7 +2057,7 @@ html:has(body.page-contact) {
 .scarf-nav-label {
   font-family: var(--font-mono);
   font-size: 0.6rem;
-  letter-spacing: 0.14em;
+  letter-spacing: var(--letter-spacing-mono);
   text-transform: uppercase;
   color: var(--text-muted);
   text-align: right;
@@ -2058,7 +2126,6 @@ html:has(body.page-contact) {
 .scarf-nav-num {
   font-family: var(--font-mono);
   font-size: 0.62rem;
-  letter-spacing: 0.08em;
   min-width: 1.25rem;
   opacity: 0;
   transform: translateX(6px);
@@ -2069,10 +2136,6 @@ html:has(body.page-contact) {
 .scarf-nav-item.active .scarf-nav-num {
   opacity: 1;
   transform: translateX(0);
-}
-
-.page-collection main {
-  padding-right: 5.5rem;
 }
 
 /* Product scarf pages: strip layout (positioning owned entirely by JS) */
@@ -2136,7 +2199,7 @@ body.product-page .scarf-nav--product {
 }
 
 .product-page main {
-  padding-top: var(--product-main-top-pad);
+  padding-top: 0;
   padding-right: 0;
   display: flex;
   flex-direction: column;
@@ -2155,6 +2218,7 @@ body.product-page .scarf-nav--product {
   padding: 0 var(--page-pad);
   min-height: 0;
   box-sizing: content-box;
+  transform: translateY(10px);
 }
 
 .product-page .product-visual {
@@ -2420,7 +2484,6 @@ body.product-page .scarf-nav--product {
 
 .product-details h1 {
   font-size: clamp(2rem, 5vw, 3.5rem);
-  letter-spacing: -0.02em;
   margin-bottom: 2rem;
 }
 
@@ -2492,8 +2555,8 @@ body.product-page .scarf-nav--product {
 .product-specs dt {
   font-family: var(--font-mono);
   font-size: 0.65rem;
+  letter-spacing: var(--letter-spacing-mono);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
   color: var(--text-muted);
 }
 
@@ -2525,7 +2588,6 @@ body.product-page .scarf-nav--product {
 .product-back {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  letter-spacing: 0.06em;
   color: var(--text-muted);
   text-decoration: none;
   transition: color 0.2s;
@@ -2535,16 +2597,56 @@ body.product-page .scarf-nav--product {
   color: var(--text);
 }
 
-/* ---- Scroll reveal ---- */
+/* ---- Scroll / page-open text reveal (contact / community title motion) ---- */
 .reveal {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: translateY(var(--page-shift));
+  transition:
+    opacity var(--title-duration) var(--title-ease),
+    transform var(--title-duration) var(--title-ease);
 }
 
 .reveal.visible {
   opacity: 1;
   transform: none;
+}
+
+/* Keep page-specific transition overrides from killing the shared reveal motion */
+.page-home .hero-overlay h1.reveal,
+.page-collection .collection-bg-text.reveal,
+.about-parallax__text--title .about-inner.reveal,
+.page-info .info-page-inner.reveal {
+  opacity: 0;
+  transform: translateY(var(--page-shift));
+  transition:
+    opacity var(--title-duration) var(--title-ease),
+    transform var(--title-duration) var(--title-ease);
+}
+
+.page-home .hero-overlay h1.reveal.visible,
+.page-collection .collection-bg-text.reveal.visible,
+.about-parallax__text--title .about-inner.reveal.visible,
+.page-info .info-page-inner.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+.page-collection.scarf-expanded .collection-bg-text.reveal,
+.page-collection.scarf-expanded .collection-bg-text.reveal.visible {
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.22, 0.84, 0.35, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .page-home .hero-overlay h1.reveal,
+  .page-collection .collection-bg-text.reveal,
+  .about-parallax__text--title .about-inner.reveal,
+  .page-info .info-page-inner.reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 /* ---- Mobile ---- */
@@ -2614,14 +2716,9 @@ body.product-page .scarf-nav--product {
     align-items: center;
   }
 
-  .page-collection main {
-    padding-right: 0;
-    padding-bottom: 5.5rem;
-  }
-
   .product-page main {
     padding-right: 0;
-    padding-top: var(--product-main-top-pad);
+    padding-top: 0;
     padding-bottom: 0;
   }
 
@@ -2699,13 +2796,16 @@ body.product-page .scarf-nav--product {
   }
 
   .nav {
+    display: flex;
     position: fixed;
     inset: 0;
-    background: var(--bg);
+    left: 0;
+    transform: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2.5rem;
+    gap: 2rem;
+    background: var(--bg);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s;
@@ -2717,22 +2817,32 @@ body.product-page .scarf-nav--product {
     pointer-events: all;
   }
 
-  .nav a { font-size: 1.1rem; }
-
-  .menu-toggle {
-    display: flex;
-    z-index: 2;
-    order: 1;
+  .header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    justify-items: unset;
   }
 
   .logo-link {
-    order: 2;
-    margin-left: 0;
+    grid-column: 2;
+    justify-self: center;
+  }
+
+  .header .nav a:nth-child(n) {
+    grid-column: unset;
+  }
+
+  .menu-toggle {
+    display: flex;
+    grid-column: 1;
+    justify-self: start;
   }
 
   .cart-widget {
-    order: 3;
-    margin-left: auto;
+    grid-column: 3;
+    justify-self: end;
+    margin-left: 0;
   }
 
   .menu-toggle.active span:first-child {
@@ -2800,13 +2910,12 @@ body.product-page .scarf-nav--product {
 
 .cart-page-header h1 {
   font-size: clamp(2rem, 5vw, 3.25rem);
-  letter-spacing: -0.02em;
 }
 
 .cart-page-count {
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--letter-spacing-mono);
   text-transform: uppercase;
   color: var(--text-muted);
 }
@@ -2850,7 +2959,7 @@ body.product-page .scarf-nav--product {
 .cart-item-label {
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--letter-spacing-mono);
   text-transform: uppercase;
   color: var(--text-muted);
   margin-bottom: 0.35rem;
@@ -2858,7 +2967,6 @@ body.product-page .scarf-nav--product {
 
 .cart-item-name {
   font-size: 1.1rem;
-  letter-spacing: 0.04em;
   margin-bottom: 0.35rem;
 }
 
@@ -2884,7 +2992,7 @@ body.product-page .scarf-nav--product {
 .cart-qty-label {
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--letter-spacing-mono);
   text-transform: uppercase;
   color: var(--text-muted);
 }
@@ -2892,7 +3000,6 @@ body.product-page .scarf-nav--product {
 .cart-qty select {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  letter-spacing: 0.04em;
   padding: 0.35rem 1.75rem 0.35rem 0.65rem;
   border: 1px solid var(--border);
   background: var(--bg);
@@ -2907,7 +3014,7 @@ body.product-page .scarf-nav--product {
 .cart-item-remove {
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--letter-spacing-mono);
   text-transform: uppercase;
   color: var(--text-muted);
   background: none;
@@ -2940,7 +3047,6 @@ body.product-page .scarf-nav--product {
 
 .cart-summary-title {
   font-size: 0.8rem;
-  letter-spacing: 0.12em;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--border);
@@ -2963,7 +3069,7 @@ body.product-page .scarf-nav--product {
 .cart-summary-line dt {
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--letter-spacing-mono);
   text-transform: uppercase;
   color: var(--text-muted);
 }
@@ -3002,7 +3108,7 @@ body.product-page .scarf-nav--product {
   text-align: center;
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--letter-spacing-mono);
   text-transform: uppercase;
   text-decoration: none;
   padding: 1rem 1.25rem;
@@ -3025,7 +3131,6 @@ body.product-page .scarf-nav--product {
 .cart-drop-note {
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  letter-spacing: 0.06em;
   color: var(--text-muted);
   padding-top: 1.25rem;
   border-top: 1px solid var(--border);
@@ -3096,8 +3201,8 @@ body.product-page .scarf-nav--product {
 }
 
 .page-about main {
-  margin-top: var(--header-height);
-  height: calc(100svh - var(--header-height));
+  margin-top: 0;
+  height: 100svh;
   overflow: hidden;
   padding-bottom: 0;
   box-sizing: border-box;
@@ -3219,7 +3324,6 @@ body.product-page .scarf-nav--product {
   font-family: var(--font-body);
   font-size: clamp(1.53rem, 4.08vw, 3.06rem);
   font-weight: 600;
-  letter-spacing: -0.03em;
   color: var(--text);
   text-align: center;
   text-transform: uppercase;
@@ -3231,7 +3335,6 @@ body.product-page .scarf-nav--product {
   font-family: var(--font-mono);
   font-size: clamp(0.867rem, 1.632vw, 1.071rem);
   font-weight: 400;
-  letter-spacing: -0.01em;
   text-transform: none;
   line-height: 1.7;
   padding: 10%;
@@ -3248,7 +3351,6 @@ body.product-page .scarf-nav--product {
   font-family: var(--font-body);
   font-size: clamp(0.158rem, 0.288vw, 0.215rem);
   font-weight: 500;
-  letter-spacing: -0.01em;
   text-transform: uppercase;
   line-height: 1.7;
   color: var(--text);
@@ -3287,7 +3389,6 @@ body.product-page .scarf-nav--product {
   font-family: var(--font-mono);
   font-weight: inherit;
   font-size: inherit;
-  letter-spacing: inherit;
 }
 
 .about-parallax__text--manifesto strong {
@@ -3295,32 +3396,120 @@ body.product-page .scarf-nav--product {
   color: var(--text);
 }
 
+/* About title — community/contact title slot, still a parallax layer (data-base-z) */
 .about-parallax__text--title {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: calc(var(--header-height) + clamp(1.5rem, 3.5vh, 2.75rem)) var(--page-pad) 0;
   font-family: var(--font-body);
-  font-size: clamp(2.04rem, 5.1vw, 3.57rem);
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-size: inherit;
+  font-weight: 400;
+  text-transform: none;
+  line-height: 1.6;
+  letter-spacing: var(--letter-spacing-inter);
+  text-align: left;
+  color: var(--text);
+  /* avoid extra 3D flattening that thins type vs community/contact */
+  transform-style: flat;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.about-parallax__text--title .about-inner {
+  width: 100%;
+  height: auto;
+  color: inherit;
+}
+
+.about-parallax__text--title .info-page-head {
+  grid-column: 1;
+  grid-row: 1;
+  /* extra line of the 2-row title so label→first-line gap matches community/contact */
+  min-height: calc(
+    clamp(5.75rem, 13vh, 8.75rem)
+    + clamp(2rem, 5vw, 3.5rem) * 0.7
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.about-parallax__text--title .info-page-head .label {
+  margin-bottom: 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: var(--letter-spacing-mono);
+  color: var(--text);
+}
+
+.about-parallax__text--title .info-page-head h1 {
+  position: relative;
+  margin-top: auto;
+  margin-bottom: 0;
+  width: max-content;
+  max-width: 100%;
+  font-family: var(--font-body);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: var(--letter-spacing-inter);
   text-transform: uppercase;
-  line-height: 1.185;
-  padding: 8%;
+  line-height: 1.15;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
-.about-parallax__text--title h1 {
-  margin: 0;
-  font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
+/* Soft frosted glow behind the words only — edges fade out, no hard frame */
+.about-parallax__text--title .info-page-head h1::before {
+  content: '';
+  position: absolute;
+  inset: -0.35em -0.55em;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse 72% 68% at 50% 50%,
+    rgba(255, 255, 255, 0.58) 0%,
+    rgba(255, 255, 255, 0.28) 42%,
+    rgba(255, 255, 255, 0.08) 68%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  -webkit-mask-image: radial-gradient(
+    ellipse 78% 72% at 50% 50%,
+    #000 18%,
+    rgba(0, 0, 0, 0.55) 48%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(
+    ellipse 78% 72% at 50% 50%,
+    #000 18%,
+    rgba(0, 0, 0, 0.55) 48%,
+    transparent 78%
+  );
+  opacity: 1;
+  transition: opacity 0.7s ease;
+  pointer-events: none;
 }
 
-/* ---- Thank you ---- */
+.about-parallax.is-scrolling .about-parallax__text--title .info-page-head h1::before {
+  opacity: 0;
+}
+
+@media (max-width: 720px) {
+  .about-parallax__text--title .info-page-head {
+    min-height: 0;
+  }
+
+  .about-parallax__text--title .info-page-head h1 {
+    margin-top: 0;
+  }
+}
+
+/* ---- Thank you (confetti sharpness locked — see .cursor/rules/thank-you-confetti-locked.mdc) ---- */
 .confetti-layer {
   position: fixed;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
-  perspective: 1000px;
-  perspective-origin: 50% 50%;
-  transform-style: preserve-3d;
 }
 
 .confetti-layer--back {
@@ -3338,25 +3527,8 @@ body.product-page .scarf-nav--product {
   display: block;
   user-select: none;
   -webkit-user-drag: none;
-  will-change: transform, opacity;
   transform: translate(-50%, -50%);
   backface-visibility: hidden;
-}
-
-.thank-you-dimmer {
-  position: fixed;
-  top: var(--header-height);
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  background: rgba(0, 0, 0, 0);
-  pointer-events: none;
-  transition: background-color var(--thank-you-dim-duration) ease;
-}
-
-.page-thank-you.is-dimmed .thank-you-dimmer {
-  background: rgba(0, 0, 0, 0.30);
 }
 
 .thank-you-page {
@@ -3371,7 +3543,6 @@ body.product-page .scarf-nav--product {
 
 /* Thank You — locked viewport, no page scroll */
 .page-thank-you {
-  --thank-you-dim-duration: 1.4s;
   --thank-you-color-duration: 2s;
   --thank-you-color-ease: cubic-bezier(0.33, 0, 0.2, 1);
   --thank-you-reveal-delay: 0.5s;
@@ -3401,8 +3572,8 @@ html:has(body.page-thank-you) {
 }
 
 .page-thank-you main {
-  margin-top: var(--header-height);
-  height: calc(100svh - var(--header-height));
+  margin-top: 0;
+  height: 100svh;
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -3428,7 +3599,6 @@ html:has(body.page-thank-you) {
   font-family: var(--font-body);
   font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 500;
-  letter-spacing: -0.02em;
   line-height: 1.35;
   max-width: 18ch;
   text-transform: uppercase;
@@ -3441,20 +3611,11 @@ html:has(body.page-thank-you) {
   font-size: clamp(1rem, 1.8vw, 1.15rem);
   font-weight: 400;
   line-height: 1.65;
-  letter-spacing: -0.01em;
   color: var(--text-muted);
   width: max-content;
   max-width: min(92vw, 52ch);
   min-height: calc(clamp(1rem, 1.8vw, 1.15rem) * 1.65 * 2);
   transition: color 2s cubic-bezier(0.33, 0, 0.2, 1);
-}
-
-.page-thank-you.is-dimmed .thank-you-title,
-.page-thank-you.is-dimmed .thank-you-note {
-  color: #fff;
-  transition-delay: calc(var(--thank-you-dim-duration) * 0.5);
-  transition-duration: 2s;
-  transition-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
 }
 
 #thank-you-subtitle-typed {
@@ -3468,13 +3629,6 @@ html:has(body.page-thank-you) {
   color: var(--text-muted);
   animation: typewriter-blink 0.95s step-end infinite;
   transition: color 2s cubic-bezier(0.33, 0, 0.2, 1);
-}
-
-.page-thank-you.is-dimmed .thank-you-note .typewriter-cursor {
-  color: #fff;
-  transition-delay: calc(var(--thank-you-dim-duration) * 0.5);
-  transition-duration: 2s;
-  transition-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
 }
 
 @keyframes typewriter-blink {

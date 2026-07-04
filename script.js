@@ -70,8 +70,6 @@
 
 // In-page hash targets (navigate only — reloads land at top via scroll-land.js)
 (function () {
-  if (document.body.classList.contains('page-home')) return;
-
   const navEntry = performance.getEntriesByType('navigation')[0];
   if (!navEntry || navEntry.type !== 'navigate' || !location.hash) return;
 
@@ -85,6 +83,21 @@
   } else {
     scrollToHash();
   }
+})();
+
+// Header wordmark (injected once — keeps HTML lean across pages)
+(function () {
+  const header = document.querySelector('.header');
+  const nav = document.querySelector('.nav');
+  if (!header || !nav || header.querySelector('.logo-link')) return;
+
+  const base = document.body.classList.contains('product-page') ? '../' : '';
+  const logo = document.createElement('a');
+  logo.className = 'logo-link';
+  logo.href = base + 'index.html';
+  logo.setAttribute('aria-label', 'GUILTY. Home');
+  logo.textContent = 'GUILTY.';
+  header.insertBefore(logo, nav);
 })();
 
 // Keep --header-height in sync so dependent elements (drawer zone, etc.) sit below it
@@ -131,19 +144,94 @@ document.querySelectorAll('.scarf-nav-item').forEach((link) => {
   });
 });
 
-// Scroll reveal
-const observer = new IntersectionObserver(
-  (entries) => entries.forEach((e) => {
-    if (e.isIntersecting) e.target.classList.add('visible');
-  }),
-  { threshold: 0.12, rootMargin: '0px 0px -30px 0px' }
-);
+// Text reveal on open / scroll (timing tokens live in styles.css).
+// Full-page motion uses CSS @view-transition crossfade — no fade-to-transparent.
+(function () {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const DURATION_MS = 480;
 
-document.querySelectorAll('.scarf-card, .about-inner, .contact-inner, .section-header, .product')
-  .forEach((el) => {
+  window.GuiltyPageTransition = {
+    navigate(url) {
+      window.location.href = url;
+    },
+    durationMs: DURATION_MS,
+  };
+
+  if (document.body.classList.contains('page-thank-you')) return;
+
+  // Same enter as contact / community: elements ship with .reveal, then get .visible.
+  const enterSel = [
+    '.page-home .hero-overlay h1.reveal',
+    '.page-collection .collection-bg-text.reveal',
+    '.about-parallax__text--title .about-inner.reveal',
+    '.info-page-inner.reveal.is-info-active',
+  ].join(', ');
+
+  function playRevealEnter() {
+    document.querySelectorAll(enterSel).forEach((el) => {
+      if (el.hasAttribute('hidden')) return;
+      el.classList.remove('visible');
+      void el.offsetWidth;
+      el.classList.add('visible');
+    });
+  }
+
+  function afterViewTransition(fn) {
+    let done = false;
+    const run = () => {
+      if (done) return;
+      done = true;
+      fn();
+    };
+
+    const revealPromise = window.__guiltyPageReveal;
+    if (revealPromise && typeof revealPromise.then === 'function') {
+      revealPromise.then((event) => {
+        if (event && event.viewTransition) {
+          event.viewTransition.finished.then(run, run);
+        } else {
+          run();
+        }
+      });
+      window.setTimeout(run, 2000);
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(run);
+    });
+  }
+
+  if (reduceMotion) {
+    document.querySelectorAll(enterSel).forEach((el) => {
+      if (!el.hasAttribute('hidden')) el.classList.add('visible');
+    });
+  } else {
+    afterViewTransition(playRevealEnter);
+  }
+
+  const revealTargets = document.querySelectorAll(
+    '.scarf-card, .section-header, .product'
+  );
+
+  revealTargets.forEach((el) => {
     el.classList.add('reveal');
-    observer.observe(el);
   });
+
+  if (reduceMotion) {
+    revealTargets.forEach((el) => el.classList.add('visible'));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => entries.forEach((e) => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    }),
+    { threshold: 0.12, rootMargin: '0px 0px -30px 0px' }
+  );
+
+  revealTargets.forEach((el) => observer.observe(el));
+})();
 
 // Shopping bag icon + preview panel
 (function () {
@@ -171,17 +259,18 @@ document.querySelectorAll('.scarf-card, .about-inner, .contact-inner, .section-h
 (function () {
   const fixedFooterPages = [
     'page-home',
+    'page-collection',
     'page-about',
+    'page-info',
     'page-comunity',
     'page-contact',
     'page-cart',
-    'page-preorder',
   ];
   const hasFixedContactFooter = fixedFooterPages.some((cls) => document.body.classList.contains(cls));
   const hasProductOverlayFooter = document.body.classList.contains('product-overlay-mode');
   if (!hasFixedContactFooter && !hasProductOverlayFooter) return;
 
-  const contact = document.querySelector('main .contact#contact, main .contact#footer');
+  const contact = document.querySelector('main .contact#contact');
   if (contact) document.body.appendChild(contact);
 
   const scrollRoots = [window];

@@ -620,7 +620,13 @@ button.link-arrow.add-to-bag {
   transform: translateY(-20px);
 }
 
-.hero-spline-stage > spline-viewer {
+.hero-spline-canvas {
+  position: absolute;
+  inset: 0;
+  transform-origin: center center;
+}
+
+.hero-spline-canvas > spline-viewer {
   position: absolute;
   inset: 0;
   display: block;

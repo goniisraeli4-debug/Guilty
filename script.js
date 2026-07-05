@@ -148,7 +148,7 @@ document.querySelectorAll('.scarf-nav-item').forEach((link) => {
 // Full-page motion uses CSS @view-transition crossfade — no fade-to-transparent.
 (function () {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const DURATION_MS = 480;
+  const DURATION_MS = 620;
 
   window.GuiltyPageTransition = {
     navigate(url) {

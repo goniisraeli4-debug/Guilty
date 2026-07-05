@@ -28,7 +28,7 @@
     document.body.appendChild(contact);
   }
 
-  const detail = ui.createDetail({ base, showPreorder: false });
+  const detail = ui.createDetail({ base });
   document.body.appendChild(detail);
 
   let activeSlug = slug;
@@ -41,7 +41,12 @@
   const parts = ui.getParts(detail);
 
   function closeToCollection() {
-    window.location.href = `${base}/index.html#collection`;
+    const url = `${base}/collection.html`;
+    if (window.GuiltyPageTransition) {
+      window.GuiltyPageTransition.navigate(url);
+      return;
+    }
+    window.location.href = url;
   }
 
   parts.closeBtn.addEventListener('click', closeToCollection);

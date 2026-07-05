@@ -5,16 +5,17 @@
   const section = document.querySelector('.about-parallax');
   if (!section) return;
 
-  const scrollPageMode = document.body.classList.contains('page-home');
-
   const layers = [...section.querySelectorAll('[data-base-z]')];
-  const MAX_OFFSET = 23339;
-  const WHEEL_FACTOR = 0.62;
-  const SMOOTH = 0.078;
+  /* scaled with layer depths (+20% spacing from title); title base-z stays 3000 */
+  const MAX_OFFSET = 28607;
+  const WHEEL_FACTOR = 0.58;
+  /* time-based lerp rate — lower = silkier follow (was ~5.1 at 60fps via fixed 0.078) */
+  const SMOOTH_RATE = 4.1;
 
   let targetOffset = 0;
   let displayOffset = 0;
   let animating = false;
+  let lastFrameTime = 0;
 
   function clamp(v, lo, hi) {
     return Math.min(hi, Math.max(lo, v));
@@ -95,6 +96,16 @@
     return opacity;
   }
 
+  /* title block — soft opacity instead of a visibility snap */
+  function getTitleOpacity(rawTravel) {
+    const p = getPerspective();
+    const fadeOutStart = p * 0.42;
+    const fadeOutEnd = p * 0.88;
+    if (rawTravel <= fadeOutStart) return 1;
+    if (rawTravel >= fadeOutEnd) return 0;
+    return 1 - smootherstep((rawTravel - fadeOutStart) / (fadeOutEnd - fadeOutStart));
+  }
+
   function applyLayers() {
     const p = getPerspective();
     const progress = displayOffset / MAX_OFFSET;
@@ -109,8 +120,9 @@
       const rawTravel = eased * (baseZ + MAX_OFFSET);
       const isMark = layer.classList.contains('about-parallax__layer--mark');
       const isManifesto = layer.classList.contains('about-parallax__text--manifesto');
+      const isTitle = layer.classList.contains('about-parallax__text--title');
       /* once a layer crosses the focal plane it flips — hide it instead */
-      const hasPassed = !isMark && !isManifesto && rawTravel >= p;
+      const hasPassed = !isMark && !isManifesto && !isTitle && rawTravel >= p;
       let travel = hasPassed ? (p - 1) : rawTravel;
 
       if (isManifesto) {
@@ -130,6 +142,15 @@
         layer.style.visibility = '';
         const paragraph = layer.querySelector('p');
         if (paragraph) paragraph.style.transform = '';
+        return;
+      }
+
+      if (isTitle) {
+        const titleOpacity = getTitleOpacity(rawTravel);
+        const titleTravel = Math.min(rawTravel, p - 1);
+        layer.style.opacity = titleOpacity.toFixed(3);
+        layer.style.transform = `translate3d(0, 0, ${titleTravel}px)`;
+        layer.style.visibility = titleOpacity < 0.01 ? 'hidden' : '';
         return;
       }
 
@@ -157,12 +178,16 @@
     if (glass) glass.style.opacity = glassOpacity.toFixed(3);
   }
 
-  function tick() {
-    displayOffset += (targetOffset - displayOffset) * SMOOTH;
+  function tick(now) {
+    const dt = lastFrameTime ? Math.min(now - lastFrameTime, 32) : 16.67;
+    lastFrameTime = now;
+    const alpha = 1 - Math.exp(-SMOOTH_RATE * dt / 1000);
+    displayOffset += (targetOffset - displayOffset) * alpha;
 
-    if (Math.abs(targetOffset - displayOffset) < 0.5) {
+    if (Math.abs(targetOffset - displayOffset) < 0.15) {
       displayOffset = targetOffset;
       animating = false;
+      lastFrameTime = 0;
     }
 
     applyLayers();
@@ -192,36 +217,8 @@
     });
   }
 
-  function getHeaderHeight() {
-    const raw = getComputedStyle(document.documentElement).getPropertyValue('--header-height');
-    const parsed = parseFloat(raw);
-    return Number.isFinite(parsed) ? parsed : 0;
-  }
-
-  function isSectionPinned() {
-    if (!scrollPageMode) return true;
-    const rect = section.getBoundingClientRect();
-    const headerH = getHeaderHeight();
-    return rect.top <= headerH + 2 && rect.bottom >= window.innerHeight - 2;
-  }
-
-  function canReleaseDown() {
-    return targetOffset >= MAX_OFFSET - 1 && displayOffset >= MAX_OFFSET - 2;
-  }
-
-  function canReleaseUp() {
-    return targetOffset <= 0 && displayOffset <= 1;
-  }
-
   window.addEventListener('wheel', (e) => {
     if (e.ctrlKey) return;
-
-    if (scrollPageMode) {
-      if (!isSectionPinned()) return;
-      if (e.deltaY > 0 && canReleaseDown()) return;
-      if (e.deltaY < 0 && canReleaseUp()) return;
-    }
-
     e.preventDefault();
     handleDelta(e.deltaY * WHEEL_FACTOR);
   }, { passive: false, capture: true });
@@ -242,12 +239,10 @@
 
   function playIntroHint() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (scrollPageMode && !isSectionPinned()) return;
 
     const hintOffset = MAX_OFFSET * 0.032;
 
     setTimeout(() => {
-      if (scrollPageMode && !isSectionPinned()) return;
       targetOffset = hintOffset;
       startAnim();
 
@@ -258,21 +253,5 @@
     }, 1500);
   }
 
-  if (scrollPageMode) {
-    let introPlayed = false;
-    const introObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !introPlayed) {
-            introPlayed = true;
-            playIntroHint();
-          }
-        });
-      },
-      { threshold: 0.6 }
-    );
-    introObserver.observe(section);
-  } else {
-    playIntroHint();
-  }
+  playIntroHint();
 })();

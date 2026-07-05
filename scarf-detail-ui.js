@@ -58,9 +58,7 @@
       </section>`;
   }
 
-  function createDetail(options) {
-    const base = options?.base || '';
-    const showPreorder = options?.showPreorder !== false;
+  function createDetail() {
     const detail = document.createElement('div');
     detail.className = 'scarf-detail';
     detail.hidden = true;
@@ -84,7 +82,6 @@
           <div class="product-actions">
             <div class="product-actions-row">
               <button type="button" class="link-arrow add-to-bag scarf-detail-bag">Add to bag <span aria-hidden="true">&rarr;</span></button>
-              ${showPreorder ? `<a class="link-arrow scarf-detail-preorder" href="${base ? `${base}/` : ''}preorder.html">Pre-order <span aria-hidden="true">&rarr;</span></a>` : ''}
             </div>
           </div>
         </div>
@@ -97,8 +94,8 @@
       visual: detail.querySelector('.scarf-detail-visual'),
       detailLabel: detail.querySelector('.scarf-detail-label'),
       detailName: detail.querySelector('.scarf-detail-name'),
+      detailCopy: detail.querySelector('.product-copy'),
       detailCart: detail.querySelector('.scarf-detail-bag'),
-      detailPreorder: detail.querySelector('.scarf-detail-preorder'),
       closeBtn: detail.querySelector('.scarf-detail-close'),
       detailBg: detail.querySelector('.scarf-detail-bg'),
     };
@@ -118,14 +115,11 @@
   function fillInfo(detail, slug, overrides) {
     const parts = getParts(detail);
     const meta = catalog.getMeta(slug);
-    const num = overrides?.num || meta?.num || '';
     const name = overrides?.name || meta?.name || '';
-    parts.detailLabel.textContent = num ? `${num} — Limited Edition` : 'Limited Edition';
+    parts.detailLabel.textContent = 'Limited Edition';
     parts.detailName.textContent = name;
-    if (slug && parts.detailPreorder) {
-      const q = `?scarf=${encodeURIComponent(slug)}`;
-      const base = overrides?.base || '';
-      parts.detailPreorder.href = `${base ? `${base}/` : ''}preorder.html${q}`;
+    if (parts.detailCopy) {
+      parts.detailCopy.innerHTML = catalog.getCopy(slug);
     }
     return name;
   }

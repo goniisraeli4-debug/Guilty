@@ -1,6 +1,17 @@
 (function () {
   'use strict';
 
+  // Capture pagereveal in <head> before first paint (script.js waits on this).
+  window.__guiltyPageReveal = new Promise(function (resolve) {
+    if (!('onpagereveal' in window)) {
+      resolve(null);
+      return;
+    }
+    window.addEventListener('pagereveal', function (event) {
+      resolve(event);
+    }, { once: true });
+  });
+
   if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
   }

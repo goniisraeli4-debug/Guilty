@@ -1,0 +1,5 @@
+Inter and IBM Plex Mono are licensed under the SIL Open Font License 1.1.
+Self-hosting and redistribution in this project are permitted.
+
+Inter: https://github.com/rsms/inter
+IBM Plex Mono: https://github.com/IBM/plex

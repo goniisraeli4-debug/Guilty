@@ -1,0 +1,35 @@
+---
+description: Locked thank-you confetti sharpness — do not regress
+globs: thank-you-confetti.js,thank-you.html,styles.css
+alwaysApply: false
+---
+
+# Thank-you confetti — locked (working state)
+
+Do **not** change confetti delivery, depth math, or sharpness CSS unless the user explicitly asks to fix a regression.
+
+## Why (do not revert to old approach)
+
+- `<img src="*.svg">` at ~30px + CSS `perspective` + `translate3d(..., z)` rasterizes tiny bitmaps and upscales them → blur.
+- `fetch()` + inline SVG breaks on `file://` (confetti disappears entirely).
+- `will-change: transform` on confetti imgs locks in low-res GPU layers.
+
+## JS — required (`thank-you-confetti.js`)
+
+- Preload with `new Image()` + `img.src` — **not** `fetch()` for SVG markup.
+- Spawn `<img>` nodes — **not** inline SVG injection.
+- `MAX_DEPTH_SCALE = PERSPECTIVE / (PERSPECTIVE - Z_END)`.
+- Spawn size: `rand(DISPLAY_MIN, DISPLAY_MAX) * MAX_DEPTH_SCALE` (full-size layout, scale down only).
+- `render()`: 2D `translate()` + `scale(visualScale)` + `rotate()` — **never** `translate3d(..., z)` on particles.
+- `visualScale(z) = depthScale(z) / MAX_DEPTH_SCALE` (max 1× — no upscaling).
+- Subpixel translate (`toFixed(2)`) — **not** `Math.round()` (integer snaps cause motion flicker).
+- Edge culling uses `baseW * visualScale`.
+
+## CSS — required (`styles.css`)
+
+- `.confetti-layer`: **no** `perspective`, `perspective-origin`, or `transform-style: preserve-3d`.
+- `.confetti-layer img`: **no** `will-change: transform` or `will-change: opacity`.
+
+## Safe to change (when user asks)
+
+- Particle count, spawn rate, colors/assets in `thank you svg/`, subtitle copy, dimming (thank-you page overlay).

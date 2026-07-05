@@ -7,14 +7,14 @@
   const MAX_QTY = 3;
 
   const CATALOG = {
-    burgundy: { name: 'Burgundy', image: 'scarfs/burgundy.svg' },
-    fuchsia: { name: 'Fuchsia', image: 'scarfs/fuchsia.svg' },
-    pink: { name: 'Pink', image: 'scarfs/pink.png' },
-    khaki: { name: 'Khaki', image: 'scarfs/khaki.png' },
-    lime: { name: 'Lime', image: 'scarfs/lime-layers/layer-2.svg' },
-    orange: { name: 'Orange', image: 'scarfs/orange.png' },
-    red: { name: 'Red', image: 'scarfs/red-layers/layer-2.svg' },
-    'baby-pink': { name: 'Baby Pink', image: 'scarfs/baby-pink.png' },
+    burgundy: { name: 'BGD.06', image: 'scarfs/burgundy.svg' },
+    fuchsia: { name: 'FCS.01', image: 'scarfs/fuchsia.svg' },
+    pink: { name: 'PNK.07', image: 'scarfs/pink.png' },
+    khaki: { name: 'KHK.08', image: 'scarfs/khaki.png' },
+    lime: { name: 'LME.04', image: 'scarfs/lime-layers/layer-2.svg' },
+    orange: { name: 'ORG.02', image: 'scarfs/orange.png' },
+    red: { name: 'CHR.03', image: 'scarfs/red-layers/layer-2.svg' },
+    'baby-pink': { name: 'PCH.05', image: 'scarfs/baby-pink.png' },
   };
 
   function read() {

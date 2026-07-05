@@ -163,18 +163,21 @@
   window.GuiltyCartWidget = { render, setOpen };
 
   function initCollectionCartButtons() {
-    if (!document.body.classList.contains('page-home')) return;
+    if (
+      !document.body.classList.contains('page-home') &&
+      !document.body.classList.contains('page-collection')
+    ) return;
 
     document.querySelectorAll('.home-scarf-item').forEach((item) => {
       const meta = item.querySelector('.home-scarf-meta');
-      const num = meta?.querySelector('.scarf-num');
-      if (!meta || !num || meta.querySelector('.home-scarf-cart')) return;
+      const h3 = meta?.querySelector('h3');
+      if (!meta || !h3 || meta.querySelector('.home-scarf-cart')) return;
 
       const href = item.getAttribute('href') || '';
       const slug = href.match(/products\/([^/]+)\.html/)?.[1];
       if (!slug || !cart.getProduct(slug)) return;
 
-      const name = meta.querySelector('h3')?.textContent?.trim() || 'scarf';
+      const name = h3.textContent?.trim() || 'scarf';
       const head = document.createElement('div');
       head.className = 'home-scarf-meta-head';
 
@@ -185,9 +188,9 @@
       btn.setAttribute('aria-label', `Add ${name} to bag`);
       btn.innerHTML = cart.bagIcon();
 
-      meta.insertBefore(head, num);
-      head.appendChild(num);
+      head.appendChild(h3);
       head.appendChild(btn);
+      meta.appendChild(head);
 
       btn.addEventListener('click', (event) => {
         event.preventDefault();
@@ -273,7 +276,7 @@
         <div class="product-actions-row">
           <button type="button" class="link-arrow add-to-bag product-add-bag">${cart.bagIcon()}<span>Add to bag</span><span aria-hidden="true">&rarr;</span></button>
         </div>
-        <a href="${base}index.html#collection" class="product-back">&larr; All scarfs</a>`;
+        <a href="${base}collection.html" class="product-back">&larr; All scarfs</a>`;
 
       actions.querySelector('.product-add-bag').addEventListener('click', () => {
         const inCart = cart.getItems().some((item) => item.slug === slug);

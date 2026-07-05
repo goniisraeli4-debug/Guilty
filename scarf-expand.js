@@ -4,7 +4,10 @@
  * Click a scarf -> morph to detail with parallax layers, product info on the right.
  */
 (function () {
-  if (!document.body.classList.contains('page-home')) return;
+  if (
+    !document.body.classList.contains('page-home') &&
+    !document.body.classList.contains('page-collection')
+  ) return;
 
   const ui = window.GuiltyScarfDetailUI;
   const catalog = window.GuiltyScarfProducts;
@@ -120,10 +123,9 @@
   }
 
   function fillInfo(item) {
-    const num = (item.querySelector('.scarf-num')?.textContent || '').trim();
     const name = (item.querySelector('h3')?.textContent || '').trim();
     const slug = slugFromItem(item);
-    ui.fillInfo(detail, slug, { num, name });
+    ui.fillInfo(detail, slug, { name });
     ui.refreshDetailBagButton(detail, slug);
     return name;
   }

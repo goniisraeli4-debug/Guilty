@@ -17,7 +17,7 @@
   };
 
   var FILE_PROTOCOL = window.location.protocol === 'file:';
-  var DURATION_MS = 480;
+  var DURATION_MS = 620;
 
   function currentFile() {
     var path = window.location.pathname.split('/').pop();

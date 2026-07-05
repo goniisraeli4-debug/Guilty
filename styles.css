@@ -1,3 +1,61 @@
+/* Self-hosted fonts — Inter & IBM Plex Mono (SIL Open Font License 1.1) */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('fonts/inter-latin-300-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/inter-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('fonts/inter-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/inter-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('fonts/inter-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/ibm-plex-mono-latin-600-normal.woff2') format('woff2');
+}
+
 *,
 *::before,
 *::after {
@@ -26,9 +84,9 @@
   --page-duration: 0.28s;
   --page-duration-ms: 280;
   --page-shift: 10px;
-  --title-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --title-duration: 0.48s;
-  --title-duration-ms: 480;
+  --title-ease: cubic-bezier(0.33, 1, 0.32, 1);
+  --title-duration: 0.62s;
+  --title-duration-ms: 620;
 }
 
 html { scroll-behavior: smooth; }
@@ -90,6 +148,7 @@ body {
   .word-guilty,
   .email-link,
   .footer-left p,
+  .footer-left a,
   .footer-right a,
   .scarf-nav-label,
   .scarf-nav-num,
@@ -191,9 +250,9 @@ button.link-arrow.add-to-bag {
   align-items: center;
   justify-items: center;
   padding: 1rem var(--page-pad);
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: #ffffff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   isolation: isolate;
   --header-font-size: 14px;
 }
@@ -605,7 +664,7 @@ button.link-arrow.add-to-bag {
 .page-home .hero-overlay .link-arrow {
   flex-shrink: 0;
   align-self: flex-end;
-  transform: translateY(-4px);
+  transform: translateY(-11px);
 }
 
 .page-home,
@@ -1549,6 +1608,25 @@ body.product-overlay-mode.is-footer-scroll-hidden .product-overlay-contact .foot
   margin-top: auto;
 }
 
+/*
+ * Multi-line titles (about / disclaimer): slot is exactly one contact title
+ * line tall. margin-top: auto → identical label→title gap as contact;
+ * extra title lines overflow below (line-height between rows is separate).
+ * min-height: 0 overrides flex item min-height:auto so the slot does not grow.
+ */
+.info-page-head__slot {
+  margin-top: auto;
+  margin-bottom: 0;
+  height: calc(clamp(2rem, 5vw, 3.5rem) * 1.6);
+  min-height: 0;
+  overflow: visible;
+}
+
+.info-page-head__slot h1 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 .about.about-page .info-page-manifesto {
   grid-column: 1;
   grid-row: 2;
@@ -1672,12 +1750,57 @@ html:has(body.page-contact) {
   z-index: 1;
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.45) 35%,
-    rgba(0, 0, 0, 0.15) 65%,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.2) 35%,
+    rgba(0, 0, 0, 0.07) 65%,
     rgba(0, 0, 0, 0) 100%
   );
   pointer-events: none;
+}
+
+.page-disclaimer .disclaimer-page-bg {
+  position: fixed;
+  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 100svh;
+  min-height: 100svh;
+  margin-left: 0;
+  z-index: 0;
+}
+
+@supports (width: 100dvw) {
+  .page-disclaimer .disclaimer-page-bg {
+    width: 100dvw;
+    height: 100dvh;
+    min-height: 100dvh;
+  }
+}
+
+.disclaimer-page-bg-video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  -webkit-object-fit: cover;
+  object-position: center center;
+  pointer-events: none;
+}
+
+.disclaimer-page-bg-video--base {
+  z-index: 0;
+  filter: brightness(0.85);
+}
+
+.disclaimer-page-bg-video--overlay {
+  z-index: 1;
+  opacity: 0.8;
 }
 
 .community-page-bg-track {
@@ -1836,6 +1959,11 @@ html:has(body.page-contact) {
     margin-top: 0;
   }
 
+  .about.about-page .info-page-head__slot {
+    margin-top: 0;
+    height: auto;
+  }
+
   .about.about-page .info-page-manifesto {
     grid-row: auto;
     width: 100%;
@@ -1919,10 +2047,10 @@ html:has(body.page-contact) {
   min-height: inherit;
 }
 
-.home-gallery-video {
+.home-gallery-video,
+.home-gallery-video-overlay {
   position: absolute;
   inset: 0;
-  z-index: 0;
   display: block;
   width: 100%;
   height: 100%;
@@ -1931,7 +2059,17 @@ html:has(body.page-contact) {
   object-fit: cover;
   -webkit-object-fit: cover;
   object-position: center center;
+}
+
+.home-gallery-video {
+  z-index: 0;
   filter: brightness(0.85);
+}
+
+.home-gallery-video-overlay {
+  z-index: 1;
+  opacity: 0.8;
+  pointer-events: none;
 }
 
 .home-gallery-mark {
@@ -2008,6 +2146,7 @@ html:has(body.page-contact) {
 .footer-left { display: flex; flex-direction: column; gap: 0.5rem; }
 
 .footer-left p,
+.footer-left a,
 .footer-right a {
   font-family: var(--font-mono);
   font-size: 0.65rem;
@@ -2016,8 +2155,39 @@ html:has(body.page-contact) {
   transform: translateY(0);
 }
 
+.page-comunity .footer-left p,
+.page-comunity .footer-left a,
+.page-comunity .footer-right a,
+.page-contact .footer-left p,
+.page-contact .footer-left a,
+.page-contact .footer-right a,
+.page-disclaimer .footer-left p,
+.page-disclaimer .footer-left a,
+.page-disclaimer .footer-right a {
+  color: #ffffff;
+}
+
+.page-comunity .footer-left a:hover,
+.page-comunity .footer-right a:hover,
+.page-contact .footer-left a:hover,
+.page-contact .footer-right a:hover,
+.page-disclaimer .footer-left a:hover,
+.page-disclaimer .footer-right a:hover {
+  color: #ffffff;
+}
+
 .footer-left p {
   margin: 0;
+}
+
+.footer-left a {
+  text-decoration: none;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.footer-left a:hover {
+  color: var(--text);
 }
 
 .footer-right {
@@ -3396,11 +3566,14 @@ body.product-page .scarf-nav--product {
   color: var(--text);
 }
 
-/* About title — community/contact title slot, still a parallax layer (data-base-z) */
+/*
+ * About title — same layout slot as community/contact info-page-head.
+ * Stage mirrors: main { margin-top: header } + section { padding: clamp… page-pad }.
+ * Keep h1 line-height (row gap between FALL FOR / THE PATTERN) as-is.
+ */
 .about-parallax__text--title {
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: calc(var(--header-height) + clamp(1.5rem, 3.5vh, 2.75rem)) var(--page-pad) 0;
+  display: block;
+  padding: 0;
   font-family: var(--font-body);
   font-size: inherit;
   font-weight: 400;
@@ -3409,26 +3582,46 @@ body.product-page .scarf-nav--product {
   letter-spacing: var(--letter-spacing-inter);
   text-align: left;
   color: var(--text);
-  /* avoid extra 3D flattening that thins type vs community/contact */
   transform-style: flat;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+.about-parallax__title-stage {
+  margin-top: var(--header-height);
+  height: calc(100% - var(--header-height));
+  padding: clamp(1.5rem, 3.5vh, 2.75rem) var(--page-pad);
+  box-sizing: border-box;
+}
+
 .about-parallax__text--title .about-inner {
-  width: 100%;
   height: auto;
   color: inherit;
+}
+
+/*
+ * About title enter: transform only. Fading opacity on an ancestor of the
+ * frost (::before + backdrop-filter) causes a glitchy blur bloom.
+ */
+.about-parallax__text--title .about-inner.reveal,
+.about-parallax__text--title .about-inner.reveal.visible {
+  opacity: 1;
+  transition: transform 0.78s cubic-bezier(0.22, 1, 0.28, 1);
+}
+
+.about-parallax__text--title .about-inner.reveal {
+  transform: translateY(8px);
+}
+
+.about-parallax__text--title .about-inner.reveal.visible {
+  transform: none;
 }
 
 .about-parallax__text--title .info-page-head {
   grid-column: 1;
   grid-row: 1;
-  /* extra line of the 2-row title so label→first-line gap matches community/contact */
-  min-height: calc(
-    clamp(5.75rem, 13vh, 8.75rem)
-    + clamp(2rem, 5vw, 3.5rem) * 0.7
-  );
+  /* identical to community/contact .info-page-head */
+  min-height: clamp(5.75rem, 13vh, 8.75rem);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -3440,13 +3633,13 @@ body.product-page .scarf-nav--product {
   font-size: 0.7rem;
   font-weight: 400;
   letter-spacing: var(--letter-spacing-mono);
-  color: var(--text);
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 .about-parallax__text--title .info-page-head h1 {
   position: relative;
-  margin-top: auto;
-  margin-bottom: 0;
+  margin: 8px 0 0;
   width: max-content;
   max-width: 100%;
   font-family: var(--font-body);
@@ -3454,7 +3647,8 @@ body.product-page .scarf-nav--product {
   font-weight: 700;
   letter-spacing: var(--letter-spacing-inter);
   text-transform: uppercase;
-  line-height: 1.15;
+  /* row gap between the two title lines — do not change */
+  line-height: 1.28;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
@@ -3499,8 +3693,9 @@ body.product-page .scarf-nav--product {
     min-height: 0;
   }
 
-  .about-parallax__text--title .info-page-head h1 {
+  .about-parallax__text--title .info-page-head__slot {
     margin-top: 0;
+    height: auto;
   }
 }
 
@@ -3635,4 +3830,13 @@ html:has(body.page-thank-you) {
   50% {
     opacity: 0;
   }
+}
+
+/* Header: solid white on every page (no frosted glass) */
+header.header,
+.header {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }

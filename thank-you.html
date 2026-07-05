@@ -6,21 +6,14 @@
   <meta name="description" content="Thank you — GUILTY.">
   <title>Thank you — GUILTY.</title>
   <link rel="icon" href="icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=hdr18">
+  <link rel="stylesheet" href="styles.css?v=hdr-solid-white">
   <script src="scroll-land.js"></script>
 </head>
 <body class="page-thank-you">
 
   <header class="header">
-    <a href="index.html" class="logo-link" aria-label="GUILTY. home">
-      <img src="wordmark.png" alt="GUILTY." class="wordmark">
-    </a>
     <nav class="nav" aria-label="Main navigation">
-      <a href="index.html" class="nav-link">Home</a>
-      <a href="index.html#collection" class="nav-link">Collection</a>
+      <a href="collection.html" class="nav-link">Collection</a>
       <a href="index.html#about" class="nav-link">About</a>
       <a href="index.html#community" class="nav-link">Community</a>
       <a href="index.html#contact" class="nav-link">Contact</a>
@@ -32,7 +25,6 @@
   </header>
 
   <div class="confetti-layer confetti-layer--back" aria-hidden="true"></div>
-  <div class="thank-you-dimmer" aria-hidden="true"></div>
 
   <main>
     <section class="thank-you-page" aria-label="Thank you">
@@ -42,7 +34,7 @@
           class="thank-you-note"
           id="thank-you-subtitle"
           data-full-text="Your order is processing.
-A pleasure doing GUILTY with you.">
+A pleasure being guilty with you.">
           <span id="thank-you-subtitle-typed"></span><span class="typewriter-cursor" aria-hidden="true">|</span>
         </p>
       </div>
@@ -51,18 +43,14 @@ A pleasure doing GUILTY with you.">
 
   <div class="confetti-layer confetti-layer--front" aria-hidden="true"></div>
 
-  <script src="script.js?v=foot1"></script>
+  <script src="script.js?v=page-tx3"></script>
   <script src="cart.js"></script>
-  <script src="thank-you-confetti.js?v=conf18"></script>
+  <script src="thank-you-confetti.js?v=conf23"></script>
   <script src="thank-you-typewriter.js?v=tw7"></script>
   <script>
     if (window.GuiltyCart) GuiltyCart.clear();
 
     document.body.classList.add('is-revealed');
-
-    setTimeout(function () {
-      document.body.classList.add('is-dimmed');
-    }, 5500);
   </script>
 </body>
 </html>

@@ -53,13 +53,16 @@
   // ---- Tuning (3D "towards camera" emitter) ----------------------------------
   const MAX_PARTICLES = 136;      // concurrent shapes in flight
   const SPAWN_INTERVAL = 75;      // ms between spawns while filling up
-  const DISPLAY_MIN = 30;         // base rendered shape height (px), pre-perspective
-  const DISPLAY_MAX = 35;         // base rendered shape height (px), pre-perspective
+  // ---- Sharpness: locked — see .cursor/rules/thank-you-confetti-locked.mdc ----
+  // Full-size <img> + 2D scale-down (never translate3d z / CSS perspective).
+  const DISPLAY_MIN = 30;         // target visual height (px) at nearest depth
+  const DISPLAY_MAX = 35;         // target visual height (px) at nearest depth
 
   const Z_START_MIN = -3000;      // deep background spawn depth (px)
   const Z_START_MAX = -1800;
   const Z_END = 820;              // depth at which approach arc completes (px)
-  const PERSPECTIVE = 1000;       // matches .confetti-layer perspective (px)
+  const PERSPECTIVE = 1000;       // virtual camera distance for depth math (px)
+  const MAX_DEPTH_SCALE = PERSPECTIVE / (PERSPECTIVE - Z_END);
   const VIEWPORT_EDGE_PAD = 24;   // px past viewport before recycle
   const Z_SPEED_MIN = 420;        // forward travel speed range (px/s)
   const Z_SPEED_MAX = 900;
@@ -92,6 +95,15 @@
 
   function buildUrl(file) {
     return encodeURI(ASSET_DIR + '/' + file);
+  }
+
+  function depthScale(z) {
+    const depth = PERSPECTIVE - z;
+    return depth > 1 ? PERSPECTIVE / depth : MAX_DEPTH_SCALE;
+  }
+
+  function visualScale(z) {
+    return depthScale(z) / MAX_DEPTH_SCALE;
   }
 
   // Preload every SVG once so spawning is instant and there are no repeat fetches.
@@ -140,20 +152,27 @@
       })();
     }
 
-    // Renders a particle's current state. All motion rides on top of the
-    // translate(-50%,-50%) anchor, so the origin is always screen-dead-center.
+    // Depth is simulated with 2D scale (never upscales past 1×) so SVG imgs stay sharp.
     function render(p) {
+      const raw = depthScale(p.z);
+      const vis = raw / MAX_DEPTH_SCALE;
+      const sx = p.x * raw;
+      const sy = p.y * raw;
+
+      // Subpixel translate (not Math.round) — integer snaps cause motion flicker.
+      // Sharpness still comes from full-size layout + scale-down only (never upscale).
       p.node.style.transform =
-        'translate(-50%, -50%) translate3d(' +
-        p.x.toFixed(2) + 'px,' + p.y.toFixed(2) + 'px,' + p.z.toFixed(2) + 'px) rotate(' +
-        p.angle.toFixed(2) + 'deg)';
+        'translate(-50%, -50%) translate(' +
+        sx.toFixed(2) + 'px,' + sy.toFixed(2) + 'px) scale(' +
+        vis.toFixed(4) + ') rotate(' +
+        (Math.round(p.angle * 100) / 100) + 'deg)';
       p.node.style.opacity = p.opacity.toFixed(3);
     }
 
     function spawn() {
       const asset = pickPool[(Math.random() * pickPool.length) | 0];
       const node = acquireNode();
-      const height = rand(DISPLAY_MIN, DISPLAY_MAX);
+      const height = rand(DISPLAY_MIN, DISPLAY_MAX) * MAX_DEPTH_SCALE;
       const width = height * asset.ratio;
 
       if (node.dataset.src !== asset.src) {
@@ -217,13 +236,13 @@
     }
 
     function isPastViewportEdge(p) {
-      const depth = PERSPECTIVE - p.z;
-      if (depth <= 1) return true;
+      const raw = depthScale(p.z);
+      if (PERSPECTIVE - p.z <= 1) return true;
 
-      const scale = PERSPECTIVE / depth;
-      const sx = p.x * scale;
-      const sy = p.y * scale;
-      const radius = Math.hypot(p.baseW * scale * 0.5, p.baseH * scale * 0.5);
+      const vis = raw / MAX_DEPTH_SCALE;
+      const sx = p.x * raw;
+      const sy = p.y * raw;
+      const radius = Math.hypot(p.baseW * vis * 0.5, p.baseH * vis * 0.5);
 
       const vw = window.innerWidth;
       const vh = window.innerHeight;

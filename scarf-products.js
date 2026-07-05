@@ -80,25 +80,60 @@
     },
   };
 
+  const DEFAULT_COPY =
+    'Part of the latest GUILTY collection.<br>Minimum effort. Maximum damage.<br>One drop. No restocks.';
+
   const META = {
-    fuchsia: { num: '01', name: 'Fuchsia' },
-    orange: { num: '02', name: 'Orange' },
-    red: { num: '03', name: 'Red' },
-    lime: { num: '04', name: 'Lime' },
-    'baby-pink': { num: '05', name: 'Baby Pink' },
-    burgundy: { num: '06', name: 'Burgundy' },
-    pink: { num: '07', name: 'Pink' },
-    khaki: { num: '08', name: 'Khaki' },
+    fuchsia: {
+      num: '01',
+      name: 'FCS.01',
+      copy: 'Industrial sewing and cutting machinery pose real risks when safety protections are lacking, including needle injuries and hand trauma.',
+    },
+    orange: {
+      num: '02',
+      name: 'ORG.02',
+      copy: 'Labor exploitation risk is highest at the earliest supply chain stages; raw material sourcing and processing; well before a garment is sewn.',
+    },
+    red: {
+      num: '03',
+      name: 'CHR.03',
+      copy: 'Only a small share of garment workers earn enough to cover basic needs; food, housing, and healthcare.',
+    },
+    lime: {
+      num: '04',
+      name: 'LME.04',
+      copy: 'Under strict output quotas, some production environments limit access to bathroom breaks; leading workers to reduce water intake during long shifts.',
+    },
+    'baby-pink': {
+      num: '05',
+      name: 'PCH.05',
+      copy: 'Each purchase connects the buyer to a supply chain they rarely see; making consumption, knowingly or not, a form of participation.',
+    },
+    burgundy: {
+      num: '06',
+      name: 'BGD.06',
+      copy: 'Emergency exits in some garment factories have been found locked or blocked during working hours;<br>a practice historically linked to some of<br>the deadliest industrial fires in the sector.',
+    },
+    pink: {
+      num: '07',
+      name: 'PNK.07',
+      copy: 'Apparel is widely regarded as one of the industries most exposed to forced labor risk within global supply chains.',
+    },
+    khaki: { num: '08', name: 'KHK.08' },
   };
 
   global.GuiltyScarfProducts = {
     PRODUCTS,
     META,
+    DEFAULT_COPY,
     getMeta(slug) {
       return META[slug] || null;
     },
     getConfig(slug) {
       return PRODUCTS[slug] || null;
+    },
+    getCopy(slug) {
+      return META[slug]?.copy || DEFAULT_COPY;
     },
   };
 })(typeof window !== 'undefined' ? window : globalThis);

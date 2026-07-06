@@ -17,14 +17,9 @@
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var images = track.querySelectorAll('.community-page-bg-item img');
-  images.forEach(function (img) {
-    if (!img.src) return;
-    var preload = new Image();
-    preload.src = img.src;
-  });
 
   var ITEM_COUNT = 7;
-  var SECONDS_PER_ITEM = 17;
+  var SECONDS_PER_ITEM = 20;
   var AUTO_DURATION = ITEM_COUNT * SECONDS_PER_ITEM;
   var IDLE_MS = 180;
   var FRICTION = 0.9;
@@ -77,7 +72,22 @@
   }
 
   function applyTransform() {
-    track.style.transform = 'translate3d(0,' + position.toFixed(2) + 'px,0)';
+    var y = position.toFixed(2);
+    track.style.transform = 'translate3d(0,' + y + 'px,0)';
+    document.documentElement.style.setProperty('--info-bg-restore-y', y + 'px');
+  }
+
+  function restoreEarly() {
+    try {
+      var saved = sessionStorage.getItem(STORAGE_KEY);
+      if (saved === null) return;
+      var value = parseFloat(saved);
+      if (!Number.isFinite(value)) return;
+      position = value;
+      applyTransform();
+    } catch (err) {
+      /* ignore */
+    }
   }
 
   function measure(options) {
@@ -94,7 +104,7 @@
 
     if (restore) {
       var saved = readStoredPosition(loopHeight);
-      position = saved !== null ? saved : 0;
+      if (saved !== null) position = saved;
     } else if (previousLoopHeight > 0 && previousLoopHeight !== loopHeight) {
       position = position * (loopHeight / previousLoopHeight);
     }
@@ -213,6 +223,15 @@
     }, 120);
   }
 
+  function boot() {
+    restoreEarly();
+    measure({ restore: true });
+    waitForImages();
+    if (!reduceMotion) {
+      rafId = requestAnimationFrame(tick);
+    }
+  }
+
   window.addEventListener('wheel', onWheel, { passive: false });
   window.addEventListener('touchstart', onTouchStart, { passive: true });
   window.addEventListener('touchmove', onTouchMove, { passive: false });
@@ -230,27 +249,13 @@
       cancelAnimationFrame(rafId);
     } else {
       lastFrame = 0;
-      rafId = requestAnimationFrame(tick);
+      if (!reduceMotion) rafId = requestAnimationFrame(tick);
     }
   });
 
-  function start() {
-    measure({ restore: true });
-    if (reduceMotion) return;
-    waitForImages();
-    rafId = requestAnimationFrame(tick);
-  }
-
-  if (document.readyState === 'complete') {
-    requestAnimationFrame(function () {
-      requestAnimationFrame(start);
-    });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot, { once: true });
   } else {
-    window.addEventListener('load', function () {
-      requestAnimationFrame(function () {
-        requestAnimationFrame(start);
-      });
-    }, { once: true });
-    measure({ restore: false });
+    boot();
   }
 })();

@@ -55,6 +55,7 @@
             <div class="parallax-world">${layers}</div>
           </div>
         </div>
+        <p class="parallax-scroll-hint">Scroll</p>
       </section>`;
   }
 
@@ -75,7 +76,7 @@
           <dl class="product-specs">
             <div><dt>Material</dt><dd>100% Polyester</dd></div>
             <div><dt>Size</dt><dd>70 &times; 70 cm</dd></div>
-            <div><dt>Edition</dt><dd>1 of 8</dd></div>
+            <div><dt>Edition</dt><dd>1 of <span class="edition-eight">8</span></dd></div>
             <div><dt>Price</dt><dd>369.99$</dd></div>
           </dl>
           <p class="product-copy">Part of the latest GUILTY collection.<br>Minimum effort. Maximum damage.<br>One drop. No restocks.</p>
@@ -230,8 +231,33 @@
     parts.visual.style.opacity = '1';
     detail.hidden = false;
     detail.classList.add('is-open');
+    triggerEditionEightAnimation(detail);
 
     return parts;
+  }
+
+  function enhanceEditionEight(root) {
+    (root || document).querySelectorAll('.product-specs dd').forEach((dd) => {
+      if (dd.querySelector('.edition-eight')) return;
+      if (dd.textContent.trim() === '1 of 8') {
+        dd.innerHTML = '1 of <span class="edition-eight">8</span>';
+      }
+    });
+  }
+
+  function triggerEditionEightAnimation(root) {
+    enhanceEditionEight(root);
+    (root || document).querySelectorAll('.edition-eight').forEach((el) => {
+      el.classList.remove('is-animating');
+      void el.offsetWidth;
+      el.classList.add('is-animating');
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => enhanceEditionEight(document));
+  } else {
+    enhanceEditionEight(document);
   }
 
   global.GuiltyScarfDetailUI = {
@@ -248,5 +274,7 @@
     destroyParallax,
     resetDetailChrome,
     openStandalone,
+    enhanceEditionEight,
+    triggerEditionEightAnimation,
   };
 })(typeof window !== 'undefined' ? window : globalThis);

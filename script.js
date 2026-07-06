@@ -297,3 +297,34 @@ document.querySelectorAll('.scarf-nav-item').forEach((link) => {
     root.addEventListener('scroll', onScrollActivity, { passive: true });
   });
 })();
+
+// Warm community/contact background images before navigation
+(function () {
+  const INFO_PAGES = ['comunity.html', 'contact.html'];
+  const BG_IMAGES = [
+    'images/IMG_0708.jpg',
+    'images/IMG_0632.jpg',
+    'images/community/community-3-img-0571.jpg?v=cb11',
+  ];
+  let prefetched = false;
+
+  function isInfoLink(href) {
+    if (!href) return false;
+    return INFO_PAGES.some((page) => href.endsWith(page) || href.includes('/' + page));
+  }
+
+  function prefetchInfoBg() {
+    if (prefetched) return;
+    prefetched = true;
+    BG_IMAGES.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }
+
+  document.querySelectorAll('a[href]').forEach((link) => {
+    if (!isInfoLink(link.getAttribute('href'))) return;
+    link.addEventListener('pointerenter', prefetchInfoBg, { once: true, passive: true });
+    link.addEventListener('touchstart', prefetchInfoBg, { once: true, passive: true });
+  });
+})();

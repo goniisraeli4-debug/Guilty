@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GUILTY loader</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="guilty-loader" role="status" aria-label="Loading">
+    <div class="guilty-loader__stack">
+      <div class="guilty-loader__mark-wrap">
+        <div class="guilty-loader__mark-spin">
+          <div class="guilty-loader__mark-coin">
+            <img
+              class="guilty-loader__mark guilty-loader__mark--front"
+              src="images/guilty-mark-icon.svg"
+              alt=""
+              width="828"
+              height="828"
+              decoding="async">
+            <img
+              class="guilty-loader__mark guilty-loader__mark--back"
+              src="images/guilty-mark-icon.svg"
+              alt=""
+              width="828"
+              height="828"
+              decoding="async"
+              aria-hidden="true">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

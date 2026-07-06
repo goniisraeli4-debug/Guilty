@@ -6,8 +6,19 @@
   <meta name="description" content="Contact GUILTY. — Inquiries about the last collection.">
   <title>Contact — GUILTY.</title>
   <link rel="icon" href="icon.png">
+  <link rel="preload" as="image" href="images/IMG_0708.jpg" fetchpriority="high">
+  <link rel="preload" as="image" href="images/IMG_0632.jpg">
   <link rel="stylesheet" href="styles.css?v=label-title-gap1">
+  <script>
+    (function () {
+      try {
+        var p = sessionStorage.getItem('guilty-info-bg-position');
+        if (p !== null) document.documentElement.style.setProperty('--info-bg-restore-y', p + 'px');
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
   <script src="scroll-land.js"></script>
+  <script src="guilty-loader.js"></script>
 </head>
 <body class="page-info page-contact">
 
@@ -27,9 +38,9 @@
   <main>
     <section class="about about-page info-page">
       <div class="community-page-bg" aria-hidden="true">
-        <div class="community-page-bg-track">
-          <div class="community-page-bg-item"><img src="images/IMG_0708.jpg" alt="" decoding="async"></div>
-          <div class="community-page-bg-item"><img src="images/IMG_0632.jpg" alt="" decoding="async"></div>
+        <div class="community-page-bg-track is-scroll-driven">
+          <div class="community-page-bg-item"><img src="images/IMG_0708.jpg" alt="" loading="eager" fetchpriority="high" decoding="sync"></div>
+          <div class="community-page-bg-item"><img src="images/IMG_0632.jpg" alt="" loading="eager" decoding="async"></div>
           <div class="community-page-bg-item"><img src="images/community/community-3-img-0571.jpg?v=cb11" alt="" decoding="async"></div>
           <div class="community-page-bg-item"><img src="images/community/community-firefly-8-shirt.jpg?v=cb21" alt="" decoding="async"></div>
           <div class="community-page-bg-item"><img src="images/community/community-img-0635-full.png?v=cb11" alt="" decoding="async"></div>
@@ -123,7 +134,7 @@
     </section>
   </main>
 
-  <script src="community-bg.js?v=cb15"></script>
+  <script src="community-bg.js?v=cb16"></script>
   <script src="info-page-nav.js?v=page-tx1"></script>
   <script src="script.js?v=page-tx11"></script>
 </body>

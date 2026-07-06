@@ -8,12 +8,14 @@
   const layers = [...section.querySelectorAll('[data-base-z]')];
   /* scaled with layer depths (+20% spacing from title); title base-z stays 3000 */
   const MAX_OFFSET = 28607;
-  const WHEEL_FACTOR = 0.58;
+  const WHEEL_FACTOR = 0.54;
   /* time-based lerp rate — lower = silkier follow (was ~5.1 at 60fps via fixed 0.078) */
-  const SMOOTH_RATE = 4.1;
+  const SMOOTH_RATE = 3.05;
+  const SETTLE_EPSILON = 0.035;
 
   let targetOffset = 0;
   let displayOffset = 0;
+  let wheelPending = 0;
   let animating = false;
   let lastFrameTime = 0;
 
@@ -181,10 +183,23 @@
   function tick(now) {
     const dt = lastFrameTime ? Math.min(now - lastFrameTime, 32) : 16.67;
     lastFrameTime = now;
+
+    if (wheelPending !== 0) {
+      const wheelBlend = 1 - Math.exp(-11.5 * dt / 1000);
+      const step = wheelPending * wheelBlend;
+      wheelPending -= step;
+      if (Math.abs(wheelPending) < 0.08) {
+        targetOffset = clamp(targetOffset + wheelPending, 0, MAX_OFFSET);
+        wheelPending = 0;
+      } else {
+        targetOffset = clamp(targetOffset + step, 0, MAX_OFFSET);
+      }
+    }
+
     const alpha = 1 - Math.exp(-SMOOTH_RATE * dt / 1000);
     displayOffset += (targetOffset - displayOffset) * alpha;
 
-    if (Math.abs(targetOffset - displayOffset) < 0.15) {
+    if (Math.abs(targetOffset - displayOffset) < SETTLE_EPSILON && wheelPending === 0) {
       displayOffset = targetOffset;
       animating = false;
       lastFrameTime = 0;
@@ -202,8 +217,8 @@
   }
 
   function handleDelta(delta) {
-    if (delta < 0 && targetOffset <= 0 && displayOffset < 1) return;
-    targetOffset = clamp(targetOffset + delta, 0, MAX_OFFSET);
+    if (delta < 0 && targetOffset <= 0 && displayOffset < 1 && wheelPending <= 0) return;
+    wheelPending += delta;
     startAnim();
   }
 

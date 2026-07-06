@@ -181,6 +181,7 @@
     });
 
     detail.classList.remove('is-switching-in');
+    ui.triggerEditionEightAnimation(detail);
     await wait(SWITCH_MS);
     switching = false;
   }
@@ -218,6 +219,7 @@
     parts.visual.style.opacity = '1';
     detail.hidden = false;
     detail.classList.add('is-open');
+    ui.triggerEditionEightAnimation(detail);
 
     hideRowItem(item);
     morphFrom(fromRect);

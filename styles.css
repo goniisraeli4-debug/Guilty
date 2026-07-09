@@ -4021,3 +4021,90 @@ body.is-loading {
     animation: none;
   }
 }
+
+/* ---- 21.5" display (2048×1152) — additive overrides only ---- */
+@media (min-width: 2048px) and (min-height: 1080px) {
+  :root {
+    --max: 1720px;
+    --page-pad: 3.5rem;
+  }
+
+  .wordmark {
+    height: 24px;
+  }
+
+  .header {
+    --header-font-size: 16px;
+    padding: 1.15rem var(--page-pad);
+  }
+
+  .cart-widget-toggle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .page-home,
+  .page-collection {
+    --home-scarf-size: calc(min(38vw, (100svh - 8rem) * 0.95) * 0.95 * 0.93 * 0.94);
+  }
+
+  .page-home .hero-overlay h1 {
+    font-size: clamp(2rem, 12vw, 150pt);
+  }
+
+  .home-scarf-scroll-track {
+    gap: 48px;
+  }
+
+  .home-gallery-wordmark,
+  .home-gallery-mark {
+    width: clamp(5rem, 14vmin, 14rem);
+  }
+
+  .collection-bg-text {
+    font-size: clamp(2rem, 12vw, 150pt);
+  }
+
+  .page-collection .home-scarf-scroll-inner {
+    transform: translateY(-36px);
+  }
+
+  .product-page,
+  .scarf-detail,
+  .product-visual--parallax {
+    --product-image-size: min(36vw, calc(100svh - 9rem));
+  }
+
+  .product-details h1,
+  .scarf-detail-info h1 {
+    font-size: clamp(2rem, 5vw, 4.25rem);
+  }
+
+  .about-page h1 {
+    font-size: clamp(2rem, 5vw, 4.25rem);
+  }
+
+  .about.about-page .info-page-head {
+    min-height: clamp(6.5rem, 13vh, 10rem);
+  }
+
+  .community-manifesto {
+    font-size: clamp(0.85rem, 1.45vw, 1.2rem);
+  }
+
+  .contact {
+    padding-top: 7.5rem;
+  }
+
+  .contact-inner h2 {
+    font-size: clamp(2rem, 5vw, 4.5rem);
+  }
+
+  .cart-page-header h1 {
+    font-size: clamp(2rem, 5vw, 4rem);
+  }
+
+  .thank-you-title {
+    font-size: clamp(2rem, 5vw, 4.25rem);
+  }
+}

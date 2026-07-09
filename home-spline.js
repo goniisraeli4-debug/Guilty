@@ -11,8 +11,13 @@
   const viewer = document.querySelector('.hero-spline spline-viewer');
   if (!canvas || !stage || !viewer) return;
 
-  /** Viewport width where the scene already looks correct */
-  const REF_WIDTH = 1440;
+  const REF_WIDTH_DEFAULT = 1440;
+  const REF_WIDTH_LARGE = 2048;
+  const LARGE_SCREEN_MQ = window.matchMedia('(min-width: 2048px) and (min-height: 1080px)');
+
+  function getRefWidth() {
+    return LARGE_SCREEN_MQ.matches ? REF_WIDTH_LARGE : REF_WIDTH_DEFAULT;
+  }
 
   function smoothstep(t) {
     return t * t * (3 - 2 * t);
@@ -32,11 +37,12 @@
   function updateSplineLayout() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
+    const refWidth = getRefWidth();
 
     stage.style.transform = '';
 
-    const scale = vw > REF_WIDTH ? vw / REF_WIDTH : 1;
-    const canvasW = vw > REF_WIDTH ? REF_WIDTH : vw;
+    const scale = vw > refWidth ? vw / refWidth : 1;
+    const canvasW = vw > refWidth ? refWidth : vw;
 
     canvas.style.inset = 'auto';
     canvas.style.width = canvasW + 'px';

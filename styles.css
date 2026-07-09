@@ -616,10 +616,6 @@ button.link-arrow.add-to-bag {
   background: var(--bg);
 }
 
-.page-home .hero-spline-stage {
-  transform: translateY(-20px);
-}
-
 .hero-spline-canvas {
   position: absolute;
   inset: 0;

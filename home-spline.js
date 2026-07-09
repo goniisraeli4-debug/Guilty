@@ -1,18 +1,18 @@
 /**
  * Home Spline — hero section only.
- * Fades the hero overlay on scroll; scales Spline on ultra-wide screens
- * so the scene fills the viewport without changing laptop layout.
+ * Fades the hero overlay on scroll; nudges Spline down on tall screens
+ * so the scene stays vertically centered (e.g. 27" iMac / GitHub Pages).
  */
 (function () {
   if (!document.body.classList.contains('page-home')) return;
 
-  const stage = document.querySelector('.hero-spline-stage');
   const canvas = document.querySelector('.hero-spline-canvas');
+  const stage = document.querySelector('.hero-spline-stage');
   const viewer = document.querySelector('.hero-spline spline-viewer');
-  if (!stage || !canvas || !viewer) return;
+  if (!canvas || !stage || !viewer) return;
 
-  /** Viewport width where the scene already looks correct */
-  const REF_WIDTH = 1440;
+  /** Viewport height where the scene already looks correct */
+  const REF_HEIGHT = 900;
 
   function smoothstep(t) {
     return t * t * (3 - 2 * t);
@@ -30,34 +30,18 @@
   }
 
   function updateSplineLayout() {
-    const vw = window.innerWidth - 100;
-    const vh = window.innerHeight - 50;
+    const vh = window.innerHeight;
+    const offsetY = vh > REF_HEIGHT ? (vh - REF_HEIGHT) * 0.35 : 0;
 
-    if (vw <= REF_WIDTH) {
-      canvas.style.width = '';
-      canvas.style.height = '';
-      canvas.style.inset = '';
-      canvas.style.left = '';
-      canvas.style.top = '';
-      canvas.style.transform = '';
-      canvas.style.transformOrigin = '';
-      stage.style.transform = 'translateY(-20px)';
-      return;
-    }
+    canvas.style.width = '';
+    canvas.style.height = '';
+    canvas.style.inset = '';
+    canvas.style.left = '';
+    canvas.style.top = '';
+    canvas.style.transform = '';
+    canvas.style.transformOrigin = '';
 
-    const scale = vw / REF_WIDTH;
-    const nudgeX = 42;
-    const nudgeY = -34;
-
-    canvas.style.inset = 'auto';
-    canvas.style.width = REF_WIDTH + 'px';
-    canvas.style.height = vh + 'px';
-    canvas.style.left = '50%';
-    canvas.style.top = '50%';
-    canvas.style.transform =
-      'translate(calc(-50% - ' + nudgeX + 'px), calc(-50% - ' + nudgeY + 'px)) scale(' + scale + ')';
-    canvas.style.transformOrigin = 'center center';
-    stage.style.transform = '';
+    stage.style.transform = offsetY ? 'translateY(' + offsetY + 'px)' : '';
   }
 
   window.addEventListener('scroll', updateOverlay, { passive: true });

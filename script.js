@@ -329,8 +329,10 @@ document.querySelectorAll('.scarf-nav-item').forEach((link) => {
   });
 })();
 
-// Vertical mouse wheel → horizontal scarf row (iMac / Magic Mouse)
+// Vertical mouse wheel → horizontal scarf row (home + collection pages only)
 (function () {
+  if (!document.body.classList.contains('page-home') &&
+    !document.body.classList.contains('page-collection')) return;
   if (window.GuiltyWheelInput) {
     window.GuiltyWheelInput.bindAllHorizontalWheelScroll();
   }

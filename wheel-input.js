@@ -54,6 +54,11 @@
   }
 
   function bindAllHorizontalWheelScroll(root) {
+    var body = document.body;
+    if (!body.classList.contains('page-home') && !body.classList.contains('page-collection')) {
+      return;
+    }
+
     (root || document).querySelectorAll('.home-scarf-scroll-inner').forEach(bindHorizontalWheelScroll);
   }
 

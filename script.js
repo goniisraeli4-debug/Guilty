@@ -328,3 +328,10 @@ document.querySelectorAll('.scarf-nav-item').forEach((link) => {
     link.addEventListener('touchstart', prefetchInfoBg, { once: true, passive: true });
   });
 })();
+
+// Vertical mouse wheel → horizontal scarf row (iMac / Magic Mouse)
+(function () {
+  if (window.GuiltyWheelInput) {
+    window.GuiltyWheelInput.bindAllHorizontalWheelScroll();
+  }
+})();

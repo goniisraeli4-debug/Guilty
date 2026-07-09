@@ -34,7 +34,7 @@
   let activeSlug = slug;
   ui.wireCartButton(detail, () => activeSlug);
 
-  ui.openStandalone(detail, slug, { base, interactive: false }).then(() => {
+  ui.openStandalone(detail, slug, { base, interactive: true }).then(() => {
     activeSlug = slug;
   });
 

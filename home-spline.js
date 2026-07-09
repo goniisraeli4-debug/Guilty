@@ -50,6 +50,18 @@
     updateSplineLayout();
   }, { passive: true });
 
+  var hero = document.querySelector('.hero-spline');
+  if (hero) {
+    hero.addEventListener('wheel', function (event) {
+      if (event.ctrlKey) return;
+      var normalize = window.GuiltyWheelInput && window.GuiltyWheelInput.normalizeWheelDelta;
+      var delta = normalize ? normalize(event) : { x: event.deltaX, y: event.deltaY };
+      if (Math.abs(delta.y) < Math.abs(delta.x)) return;
+      window.scrollBy(0, delta.y);
+      event.preventDefault();
+    }, { passive: false, capture: true });
+  }
+
   viewer.addEventListener('load', updateSplineLayout);
   updateOverlay();
   updateSplineLayout();

@@ -16,9 +16,15 @@
     return 1 - Math.pow(1 - t, 3);
   }
 
+  function wheelDeltaY(event) {
+    const normalize = window.GuiltyWheelInput?.normalizeWheelDelta;
+    return normalize ? normalize(event).y : event.deltaY;
+  }
+
   function attach(section) {
     if (!section) return null;
 
+    const wheelRoot = section.closest('.scarf-detail') || section;
     const frame = section.querySelector('.parallax-frame');
     const world = section.querySelector('.parallax-world');
     const layers = [...section.querySelectorAll('.parallax-layer')];
@@ -174,16 +180,15 @@
     }
 
     function onWheel(event) {
-      if (!pointerInside) return;
       event.preventDefault();
-      const delta = event.deltaY * 0.85;
+      const delta = wheelDeltaY(event) * 0.85;
       if (delta < 0 && isAtRest()) return;
       setOffset(targetOffset + delta, { smooth: true });
     }
 
-    section.addEventListener('mouseenter', onEnter);
-    section.addEventListener('mouseleave', onLeave);
-    section.addEventListener('wheel', onWheel, { passive: false });
+    wheelRoot.addEventListener('mouseenter', onEnter);
+    wheelRoot.addEventListener('mouseleave', onLeave);
+    wheelRoot.addEventListener('wheel', onWheel, { passive: false });
 
     updateLayers();
 
@@ -196,9 +201,9 @@
         updateLayers();
       },
       destroy() {
-        section.removeEventListener('mouseenter', onEnter);
-        section.removeEventListener('mouseleave', onLeave);
-        section.removeEventListener('wheel', onWheel);
+        wheelRoot.removeEventListener('mouseenter', onEnter);
+        wheelRoot.removeEventListener('mouseleave', onLeave);
+        wheelRoot.removeEventListener('wheel', onWheel);
         section.classList.remove('is-scrolling');
         layers.forEach((layer) => {
           layer.style.transform = '';

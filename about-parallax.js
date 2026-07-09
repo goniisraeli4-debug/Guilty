@@ -188,7 +188,7 @@
       const wheelBlend = 1 - Math.exp(-11.5 * dt / 1000);
       const step = wheelPending * wheelBlend;
       wheelPending -= step;
-      if (Math.abs(wheelPending) < 0.08) {
+      if (Math.abs(wheelPending) < 0.02) {
         targetOffset = clamp(targetOffset + wheelPending, 0, MAX_OFFSET);
         wheelPending = 0;
       } else {
@@ -232,10 +232,15 @@
     });
   }
 
+  function wheelDeltaY(event) {
+    const normalize = window.GuiltyWheelInput?.normalizeWheelDelta;
+    return normalize ? normalize(event).y : event.deltaY;
+  }
+
   window.addEventListener('wheel', (e) => {
     if (e.ctrlKey) return;
     e.preventDefault();
-    handleDelta(e.deltaY * WHEEL_FACTOR);
+    handleDelta(wheelDeltaY(e) * WHEEL_FACTOR);
   }, { passive: false, capture: true });
 
   window.addEventListener('resize', onLayoutChange);

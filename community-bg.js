@@ -151,12 +151,17 @@
     storePosition();
   }
 
+  function wheelDeltaY(event) {
+    var normalize = window.GuiltyWheelInput && window.GuiltyWheelInput.normalizeWheelDelta;
+    return normalize ? normalize(event).y : event.deltaY;
+  }
+
   function onWheel(event) {
     if (!ready) return;
     var now = performance.now();
     var dt = lastWheel ? Math.min(0.05, (now - lastWheel) / 1000) : 0.016;
     lastWheel = now;
-    noteInput(event.deltaY, dt);
+    noteInput(wheelDeltaY(event), dt);
     event.preventDefault();
   }
 

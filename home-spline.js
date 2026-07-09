@@ -15,6 +15,9 @@
   const REF_WIDTH = 1440;
   /** Viewport height where the scene already looks correct */
   const REF_HEIGHT = 900;
+  /** Fine-tune from viewport center */
+  const OFFSET_X = -15;
+  const OFFSET_Y = 50;
 
   function smoothstep(t) {
     return t * t * (3 - 2 * t);
@@ -43,8 +46,9 @@
       canvas.style.inset = '';
       canvas.style.left = '';
       canvas.style.top = '';
-      canvas.style.transform = '';
-      canvas.style.transformOrigin = '';
+      canvas.style.transformOrigin = 'center center';
+      canvas.style.transform =
+        'translate(' + OFFSET_X + 'px, ' + OFFSET_Y + 'px)';
       return;
     }
 
@@ -57,7 +61,8 @@
     canvas.style.left = '50%';
     canvas.style.top = '50%';
     canvas.style.transformOrigin = 'center center';
-    canvas.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
+    canvas.style.transform =
+      'translate(calc(-50% + ' + OFFSET_X + 'px), calc(-50% + ' + OFFSET_Y + 'px)) scale(' + scale + ')';
   }
 
   window.addEventListener('scroll', updateOverlay, { passive: true });

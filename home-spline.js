@@ -11,13 +11,10 @@
   const viewer = document.querySelector('.hero-spline spline-viewer');
   if (!canvas || !stage || !viewer) return;
 
-  const REF_WIDTH_DEFAULT = 1440;
-  const REF_WIDTH_LARGE = 2048;
-  const LARGE_SCREEN_MQ = window.matchMedia('(min-width: 2048px) and (min-height: 1080px)');
-
-  function getRefWidth() {
-    return LARGE_SCREEN_MQ.matches ? REF_WIDTH_LARGE : REF_WIDTH_DEFAULT;
-  }
+  const REF_WIDTH = 1440;
+  const REF_HEIGHT = 900;
+  /** Spline scene content sits left of canvas center — nudge down on all sizes */
+  const OFFSET_Y = 90;
 
   function smoothstep(t) {
     return t * t * (3 - 2 * t);
@@ -37,20 +34,34 @@
   function updateSplineLayout() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    const refWidth = getRefWidth();
 
     stage.style.transform = '';
 
-    const scale = vw > refWidth ? vw / refWidth : 1;
-    const canvasW = vw > refWidth ? refWidth : vw;
+    const offsetX = vw > REF_WIDTH ? Math.round((vw - REF_WIDTH) * 0.1) : 0;
+    const offsetY = OFFSET_Y + (vh > REF_HEIGHT ? (vh - REF_HEIGHT) * 0.15 : 0);
+
+    if (vw <= REF_WIDTH) {
+      canvas.style.inset = '0';
+      canvas.style.width = '';
+      canvas.style.height = '';
+      canvas.style.left = '';
+      canvas.style.top = '';
+      canvas.style.transformOrigin = 'center center';
+      canvas.style.transform =
+        'translate(' + offsetX + 'px, ' + offsetY + 'px)';
+      return;
+    }
+
+    const scale = vw / REF_WIDTH;
 
     canvas.style.inset = 'auto';
-    canvas.style.width = canvasW + 'px';
+    canvas.style.width = REF_WIDTH + 'px';
     canvas.style.height = vh + 'px';
     canvas.style.left = '50%';
     canvas.style.top = '50%';
     canvas.style.transformOrigin = 'center center';
-    canvas.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
+    canvas.style.transform =
+      'translate(calc(-50% + ' + offsetX + 'px), calc(-50% + ' + offsetY + 'px)) scale(' + scale + ')';
   }
 
   window.addEventListener('scroll', updateOverlay, { passive: true });

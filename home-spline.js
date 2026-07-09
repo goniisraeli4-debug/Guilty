@@ -1,7 +1,6 @@
 /**
  * Home Spline — hero section only.
- * Fades the hero overlay on scroll; nudges Spline down on tall screens
- * so the scene stays vertically centered (e.g. 27" iMac / GitHub Pages).
+ * Fades the hero overlay on scroll; centers and scales the scene per viewport.
  */
 (function () {
   if (!document.body.classList.contains('page-home')) return;
@@ -11,8 +10,17 @@
   const viewer = document.querySelector('.hero-spline spline-viewer');
   if (!canvas || !stage || !viewer) return;
 
-  /** Viewport height where the scene already looks correct */
-  const REF_HEIGHT = 900;
+  const LAPTOP_REF_WIDTH = 1440;
+  const IMAC_REF_WIDTH = 2048;
+  const IMAC_REF_HEIGHT = 1152;
+  const IMAC_MQ = window.matchMedia('(min-width: 2048px) and (min-height: 1080px)');
+
+  /** Horizontal nudge for the 2048×1152 iMac layout (positive = right) */
+  const IMAC_OFFSET_X = 400;
+  /** Vertical nudge for the 2048×1152 iMac layout (positive = down) */
+  const IMAC_OFFSET_Y = 140;
+  /** Scene size multiplier for the 2048×1152 iMac layout */
+  const IMAC_SCALE_BOOST = 1.5;
 
   function smoothstep(t) {
     return t * t * (3 - 2 * t);
@@ -29,19 +37,54 @@
     document.documentElement.style.setProperty('--overlay-opacity', 1 - fadeT);
   }
 
-  function updateSplineLayout() {
-    const vh = window.innerHeight;
-    const offsetY = vh > REF_HEIGHT ? (vh - REF_HEIGHT) * 0.35 : 0;
-
+  function resetCanvas() {
+    canvas.style.inset = '';
     canvas.style.width = '';
     canvas.style.height = '';
-    canvas.style.inset = '';
     canvas.style.left = '';
+    canvas.style.right = '';
     canvas.style.top = '';
+    canvas.style.bottom = '';
+    canvas.style.margin = '';
     canvas.style.transform = '';
     canvas.style.transformOrigin = '';
+    stage.style.transform = '';
+  }
 
-    stage.style.transform = offsetY ? 'translateY(' + offsetY + 'px)' : '';
+  function centerCanvas(width, height, scale, offsetX, offsetY) {
+    offsetX = offsetX || 0;
+    offsetY = offsetY || 0;
+
+    canvas.style.inset = 'auto';
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    canvas.style.left = '0';
+    canvas.style.right = '0';
+    canvas.style.top = '0';
+    canvas.style.bottom = '0';
+    canvas.style.margin = 'auto';
+    canvas.style.transformOrigin = 'center center';
+    canvas.style.transform =
+      'translate(' + offsetX + 'px, ' + offsetY + 'px) scale(' + scale + ')';
+  }
+
+  function updateSplineLayout() {
+    const vw = window.innerWidth;
+    resetCanvas();
+
+    if (IMAC_MQ.matches) {
+      const scale = (vw / IMAC_REF_WIDTH) * IMAC_SCALE_BOOST;
+      centerCanvas(IMAC_REF_WIDTH, IMAC_REF_HEIGHT, scale, IMAC_OFFSET_X, IMAC_OFFSET_Y);
+      return;
+    }
+
+    if (vw <= LAPTOP_REF_WIDTH) {
+      canvas.style.inset = '0';
+      return;
+    }
+
+    const scale = vw / LAPTOP_REF_WIDTH;
+    centerCanvas(LAPTOP_REF_WIDTH, window.innerHeight, scale);
   }
 
   window.addEventListener('scroll', updateOverlay, { passive: true });
@@ -49,6 +92,12 @@
     updateOverlay();
     updateSplineLayout();
   }, { passive: true });
+
+  if (IMAC_MQ.addEventListener) {
+    IMAC_MQ.addEventListener('change', updateSplineLayout);
+  } else if (IMAC_MQ.addListener) {
+    IMAC_MQ.addListener(updateSplineLayout);
+  }
 
   viewer.addEventListener('load', updateSplineLayout);
   updateOverlay();

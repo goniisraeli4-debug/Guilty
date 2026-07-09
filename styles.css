@@ -2802,6 +2802,10 @@ body.product-page .scarf-nav--product {
   max-width: 36ch;
 }
 
+.product-copy-tagline {
+  white-space: nowrap;
+}
+
 .product-actions {
   display: flex;
   flex-direction: column;

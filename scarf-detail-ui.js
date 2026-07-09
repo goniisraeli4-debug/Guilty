@@ -79,7 +79,7 @@
             <div><dt>Edition</dt><dd>1 of <span class="edition-eight">8</span></dd></div>
             <div><dt>Price</dt><dd>369.99$</dd></div>
           </dl>
-          <p class="product-copy">Part of the latest GUILTY collection.<br>Minimum effort. Maximum damage.<br>One drop. No restocks.</p>
+          <p class="product-copy">Part of the latest GUILTY collection.<br><span class="product-copy-tagline">Minimum effort. Maximum damage.</span><br>One drop. No restocks.</p>
           <div class="product-actions">
             <div class="product-actions-row">
               <button type="button" class="link-arrow add-to-bag scarf-detail-bag">Add to bag <span aria-hidden="true">&rarr;</span></button>

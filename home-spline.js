@@ -1,7 +1,7 @@
 /**
  * Home Spline — hero section only.
- * Fades the hero overlay on scroll; nudges Spline down on tall screens
- * so the scene stays vertically centered (e.g. 27" iMac / GitHub Pages).
+ * Fades the hero overlay on scroll; keeps the scene centered in the viewport
+ * and scales on wide screens from the center.
  */
 (function () {
   if (!document.body.classList.contains('page-home')) return;
@@ -34,26 +34,30 @@
   function updateSplineLayout() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    const scaleX = vw > REF_WIDTH ? vw / REF_WIDTH : 1;
-    const offsetY = vh > REF_HEIGHT ? (vh - REF_HEIGHT) * 0.35 : 0;
-    const nudgeX = scaleX > 1 ? 42 : 0;
 
-    canvas.style.width = '';
-    canvas.style.height = '';
-    canvas.style.inset = '';
-    canvas.style.left = '';
-    canvas.style.top = '';
-    canvas.style.transformOrigin = '';
+    stage.style.transform = '';
 
-    stage.style.transform = offsetY ? 'translateY(' + offsetY + 'px)' : '';
-
-    if (scaleX <= 1) {
+    if (vw <= REF_WIDTH && vh <= REF_HEIGHT) {
+      canvas.style.width = '';
+      canvas.style.height = '';
+      canvas.style.inset = '';
+      canvas.style.left = '';
+      canvas.style.top = '';
       canvas.style.transform = '';
+      canvas.style.transformOrigin = '';
       return;
     }
 
+    const scale = vw > REF_WIDTH ? vw / REF_WIDTH : 1;
+    const canvasW = vw > REF_WIDTH ? REF_WIDTH : vw;
+
+    canvas.style.inset = 'auto';
+    canvas.style.width = canvasW + 'px';
+    canvas.style.height = vh + 'px';
+    canvas.style.left = '50%';
+    canvas.style.top = '50%';
     canvas.style.transformOrigin = 'center center';
-    canvas.style.transform = 'translateX(-' + nudgeX + 'px) scaleX(' + scaleX + ')';
+    canvas.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
   }
 
   window.addEventListener('scroll', updateOverlay, { passive: true });

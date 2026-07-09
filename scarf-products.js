@@ -81,7 +81,7 @@
   };
 
   const DEFAULT_COPY =
-    'Part of the latest GUILTY collection.<br>Minimum effort. Maximum damage.<br>One drop. No restocks.';
+    'Part of the latest GUILTY collection.<br><span class="product-copy-tagline">Minimum effort. Maximum damage.</span><br>One drop. No restocks.';
 
   const META = {
     fuchsia: { num: '01', name: 'FCS.01' },

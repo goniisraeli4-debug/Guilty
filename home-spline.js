@@ -15,6 +15,8 @@
   const IMAC_REF_HEIGHT = 1152;
   const IMAC_MQ = window.matchMedia('(min-width: 2048px) and (min-height: 1080px)');
 
+  const IMAC_OFFSET_X = -35;
+
   function smoothstep(t) {
     return t * t * (3 - 2 * t);
   }
@@ -41,7 +43,9 @@
     stage.style.transform = '';
   }
 
-  function centerCanvas(width, height, scale) {
+  function centerCanvas(width, height, scale, offsetX, offsetY) {
+    offsetX = offsetX || 0;
+    offsetY = offsetY || 0;
     canvas.style.inset = 'auto';
     canvas.style.width = width + 'px';
     canvas.style.height = height + 'px';
@@ -49,7 +53,7 @@
     canvas.style.top = '50%';
     canvas.style.transformOrigin = 'center center';
     canvas.style.transform =
-      'translate(-50%, -50%) scale(' + scale + ')';
+      'translate(calc(-50% + ' + offsetX + 'px), calc(-50% + ' + offsetY + 'px)) scale(' + scale + ')';
   }
 
   function updateSplineLayout() {
@@ -58,7 +62,7 @@
 
     if (IMAC_MQ.matches) {
       const scale = vw / IMAC_REF_WIDTH;
-      centerCanvas(IMAC_REF_WIDTH, IMAC_REF_HEIGHT, scale);
+      centerCanvas(IMAC_REF_WIDTH, IMAC_REF_HEIGHT, scale, IMAC_OFFSET_X, 0);
       return;
     }
 

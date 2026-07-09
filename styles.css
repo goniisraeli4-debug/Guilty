@@ -761,6 +761,63 @@ html:has(body.page-collection) {
   scroll-snap-align: end;
 }
 
+/* Scarf row — minimal viewport arrows */
+.scarf-scroll-arrow {
+  position: fixed;
+  top: 50%;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+  opacity: 0.32;
+  transform: translateY(-50%);
+  transition: opacity 0.2s ease;
+}
+
+.scarf-scroll-arrow:hover:not(:disabled) {
+  opacity: 0.72;
+}
+
+.scarf-scroll-arrow:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.scarf-scroll-arrow--prev {
+  left: clamp(0.35rem, 1.5vw, 1rem);
+}
+
+.scarf-scroll-arrow--next {
+  right: clamp(0.35rem, 1.5vw, 1rem);
+}
+
+.page-home .scarf-scroll-arrow {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.page-home .home-scarf-scroll.is-scarf-nav-visible .scarf-scroll-arrow:not(:disabled) {
+  opacity: 0.32;
+  pointer-events: auto;
+}
+
+.page-home .home-scarf-scroll.is-scarf-nav-visible .scarf-scroll-arrow:not(:disabled):hover {
+  opacity: 0.72;
+}
+
+.page-collection.scarf-expanded .scarf-scroll-arrow,
+.page-home.scarf-expanded .scarf-scroll-arrow {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .page-home .home-gallery {
   position: relative;
   z-index: 5;

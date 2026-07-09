@@ -1,7 +1,6 @@
 /**
  * Home Spline — hero section only.
- * Fades the hero overlay on scroll; centers the scene in the viewport.
- * Calibrated for 2048×1152 iMac; laptops use a separate full-bleed layout.
+ * Fades the hero overlay on scroll; centers and scales the scene per viewport.
  */
 (function () {
   if (!document.body.classList.contains('page-home')) return;
@@ -11,14 +10,10 @@
   const viewer = document.querySelector('.hero-spline spline-viewer');
   if (!canvas || !stage || !viewer) return;
 
-  /** 21.5" iMac design viewport */
-  const IMAC_W = 2048;
-  const IMAC_H = 1152;
-  /** Laptop design viewport */
-  const LAPTOP_W = 1440;
-  const LAPTOP_H = 900;
-
-  const IMAC_MQ = window.matchMedia('(min-width: 1900px) and (min-height: 1000px)');
+  const LAPTOP_REF_WIDTH = 1440;
+  const IMAC_REF_WIDTH = 2048;
+  const IMAC_REF_HEIGHT = 1152;
+  const IMAC_MQ = window.matchMedia('(min-width: 2048px) and (min-height: 1080px)');
 
   function smoothstep(t) {
     return t * t * (3 - 2 * t);
@@ -43,38 +38,37 @@
     canvas.style.top = '';
     canvas.style.transform = '';
     canvas.style.transformOrigin = '';
+    stage.style.transform = '';
   }
 
-  function centerCanvas(refW, refH, scale) {
+  function centerCanvas(width, height, scale) {
     canvas.style.inset = 'auto';
-    canvas.style.width = refW + 'px';
-    canvas.style.height = refH + 'px';
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
     canvas.style.left = '50%';
     canvas.style.top = '50%';
     canvas.style.transformOrigin = 'center center';
-    canvas.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
+    canvas.style.transform =
+      'translate(-50%, -50%) scale(' + scale + ')';
   }
 
   function updateSplineLayout() {
     const vw = window.innerWidth;
-    const vh = window.innerHeight;
-
-    stage.style.transform = '';
+    resetCanvas();
 
     if (IMAC_MQ.matches) {
-      const scale = vw / IMAC_W;
-      centerCanvas(IMAC_W, IMAC_H, scale);
+      const scale = vw / IMAC_REF_WIDTH;
+      centerCanvas(IMAC_REF_WIDTH, IMAC_REF_HEIGHT, scale);
       return;
     }
 
-    if (vw <= LAPTOP_W && vh <= LAPTOP_H) {
-      resetCanvas();
+    if (vw <= LAPTOP_REF_WIDTH) {
       canvas.style.inset = '0';
       return;
     }
 
-    const scale = vw > LAPTOP_W ? vw / LAPTOP_W : 1;
-    centerCanvas(LAPTOP_W, vh, scale);
+    const scale = vw / LAPTOP_REF_WIDTH;
+    centerCanvas(LAPTOP_REF_WIDTH, window.innerHeight, scale);
   }
 
   window.addEventListener('scroll', updateOverlay, { passive: true });

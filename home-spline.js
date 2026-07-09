@@ -17,7 +17,7 @@
   const REF_HEIGHT = 900;
   /** Fine-tune from viewport center */
   const OFFSET_X = -15;
-  const OFFSET_Y = 50;
+  const OFFSET_Y = 90;
 
   function smoothstep(t) {
     return t * t * (3 - 2 * t);

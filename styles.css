@@ -846,6 +846,14 @@ html:has(body.page-collection) {
   flex: 0 1 auto;
   display: flex;
   align-items: center;
+  cursor: grab;
+}
+
+.page-home .home-scarf-scroll-inner.is-dragging,
+.page-collection .home-scarf-scroll-inner.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .home-scarf-scroll-inner::-webkit-scrollbar {

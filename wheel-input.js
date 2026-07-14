@@ -33,6 +33,27 @@
     return document.body.classList.contains('scarf-expanded');
   }
 
+  var SNAP_RESTORE_MS = 140;
+
+  /*
+   * CSS scroll-snap re-snaps every small programmatic scrollLeft change back to
+   * the current item, which swallows per-notch mouse-wheel / trackpad input.
+   * Suspend snapping while the wheel is actively moving, then restore it shortly
+   * after the user stops so the row still settles neatly on a scarf.
+   */
+  function suspendSnapWhileScrolling(container) {
+    if (container.style.scrollSnapType !== 'none') {
+      container.style.scrollSnapType = 'none';
+    }
+    if (container._guiltySnapTimer) {
+      clearTimeout(container._guiltySnapTimer);
+    }
+    container._guiltySnapTimer = setTimeout(function () {
+      container.style.scrollSnapType = '';
+      container._guiltySnapTimer = null;
+    }, SNAP_RESTORE_MS);
+  }
+
   function scrollHorizontally(container, event) {
     if (!container || shouldSkipScarfWheel()) return false;
     if (event.ctrlKey) return false;
@@ -49,8 +70,11 @@
     if (maxScroll <= 0) return false;
 
     var next = Math.max(0, Math.min(maxScroll, container.scrollLeft + horizontal));
+
+    /* At a travel edge in the requested direction: let the event pass through. */
     if (next === container.scrollLeft) return false;
 
+    suspendSnapWhileScrolling(container);
     container.scrollLeft = next;
     event.preventDefault();
     return true;
@@ -85,29 +109,31 @@
     if (!container || container._guiltyDragScroll) return;
     container._guiltyDragScroll = true;
 
-    var DRAG_THRESHOLD = 6;
+    var DRAG_THRESHOLD = 8;
     var activePointer = null;
     var startX = 0;
     var startScrollLeft = 0;
     var dragging = false;
-    var suppressClick = false;
+    var blockNextClick = false;
 
     container.addEventListener('click', function (event) {
-      if (!suppressClick) return;
+      if (!blockNextClick) return;
       event.preventDefault();
       event.stopPropagation();
-      suppressClick = false;
+      blockNextClick = false;
     }, true);
 
     function endDrag(event) {
       if (activePointer === null || (event && event.pointerId !== activePointer)) return;
 
-      if (dragging) suppressClick = true;
+      blockNextClick = dragging;
 
-      try {
-        container.releasePointerCapture(activePointer);
-      } catch (err) {
-        /* ignore */
+      if (dragging) {
+        try {
+          container.releasePointerCapture(activePointer);
+        } catch (err) {
+          /* ignore */
+        }
       }
 
       dragging = false;
@@ -124,7 +150,7 @@
       startX = event.clientX;
       startScrollLeft = container.scrollLeft;
       dragging = false;
-      container.setPointerCapture(activePointer);
+      blockNextClick = false;
     });
 
     container.addEventListener('pointermove', function (event) {
@@ -139,17 +165,22 @@
         if (Math.abs(dx) < DRAG_THRESHOLD) return;
         dragging = true;
         container.classList.add('is-dragging');
+        try {
+          container.setPointerCapture(activePointer);
+        } catch (err) {
+          /* ignore */
+        }
       }
 
       event.preventDefault();
 
       var maxScroll = container.scrollWidth - container.clientWidth;
+      suspendSnapWhileScrolling(container);
       container.scrollLeft = Math.max(0, Math.min(maxScroll, startScrollLeft - dx));
     });
 
     container.addEventListener('pointerup', endDrag);
     container.addEventListener('pointercancel', endDrag);
-    container.addEventListener('lostpointercapture', endDrag);
   }
 
   function bindAllDragScroll(root) {

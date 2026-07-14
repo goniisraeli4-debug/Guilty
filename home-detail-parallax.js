@@ -180,14 +180,18 @@
     }
 
     function onWheel(event) {
+      /* Hover-gated: leave the flythrough visual → reverse; don't keep driving from the info panel. */
+      if (!pointerInside) return;
       event.preventDefault();
       const delta = wheelDeltaY(event) * 0.85;
       if (delta < 0 && isAtRest()) return;
       setOffset(targetOffset + delta, { smooth: true });
     }
 
-    wheelRoot.addEventListener('mouseenter', onEnter);
-    wheelRoot.addEventListener('mouseleave', onLeave);
+    /* Enter/leave on the flythrough section so leaving the parallax visual reverses the layers. */
+    section.addEventListener('mouseenter', onEnter);
+    section.addEventListener('mouseleave', onLeave);
+    /* Wheel on scarf-detail (or the section) so trackpad/mouse capture stays reliable. */
     wheelRoot.addEventListener('wheel', onWheel, { passive: false });
 
     updateLayers();
@@ -201,8 +205,8 @@
         updateLayers();
       },
       destroy() {
-        wheelRoot.removeEventListener('mouseenter', onEnter);
-        wheelRoot.removeEventListener('mouseleave', onLeave);
+        section.removeEventListener('mouseenter', onEnter);
+        section.removeEventListener('mouseleave', onLeave);
         wheelRoot.removeEventListener('wheel', onWheel);
         section.classList.remove('is-scrolling');
         layers.forEach((layer) => {

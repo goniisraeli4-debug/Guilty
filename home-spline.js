@@ -15,6 +15,10 @@
   const IMAC_REF_HEIGHT = 1152;
   const IMAC_MQ = window.matchMedia('(min-width: 2048px) and (min-height: 1080px)');
 
+  /** Global horizontal nudge for the Spline scene (positive = right) */
+  const SCENE_OFFSET_X = -20;
+  /** Global vertical nudge for the Spline scene (positive = down) */
+  const SCENE_OFFSET_Y = -20;
   /** Horizontal nudge for the 2048×1152 iMac layout (positive = right) */
   const IMAC_OFFSET_X = 400;
   /** Vertical nudge for the 2048×1152 iMac layout (positive = down) */
@@ -74,17 +78,25 @@
 
     if (IMAC_MQ.matches) {
       const scale = (vw / IMAC_REF_WIDTH) * IMAC_SCALE_BOOST;
-      centerCanvas(IMAC_REF_WIDTH, IMAC_REF_HEIGHT, scale, IMAC_OFFSET_X, IMAC_OFFSET_Y);
+      centerCanvas(
+        IMAC_REF_WIDTH,
+        IMAC_REF_HEIGHT,
+        scale,
+        IMAC_OFFSET_X + SCENE_OFFSET_X,
+        IMAC_OFFSET_Y + SCENE_OFFSET_Y
+      );
       return;
     }
 
     if (vw <= LAPTOP_REF_WIDTH) {
       canvas.style.inset = '0';
+      canvas.style.transform =
+        'translate(' + SCENE_OFFSET_X + 'px, ' + SCENE_OFFSET_Y + 'px)';
       return;
     }
 
     const scale = vw / LAPTOP_REF_WIDTH;
-    centerCanvas(LAPTOP_REF_WIDTH, window.innerHeight, scale);
+    centerCanvas(LAPTOP_REF_WIDTH, window.innerHeight, scale, SCENE_OFFSET_X, SCENE_OFFSET_Y);
   }
 
   window.addEventListener('scroll', updateOverlay, { passive: true });

@@ -87,7 +87,12 @@
     var container = section.querySelector('.home-scarf-scroll-inner');
     if (!container) return;
 
+    /*
+     * Home collection only: horizontal when the cursor is on a scarf product;
+     * otherwise leave the event alone so the page can scroll vertically.
+     */
     section.addEventListener('wheel', function (event) {
+      if (!event.target.closest('.home-scarf-item')) return;
       scrollHorizontally(container, event);
     }, { passive: false });
   }
